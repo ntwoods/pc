@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reminders For Dispatch Departments</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen p-4">
+  <div id="loader" class="text-center text-xl text-blue-600 font-semibold">Loading orders...</div>
+  <div id="ordersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 hidden"></div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbxMxIzOQmHv3LPTh6ca6i5uuguyH615cnjA5emEGNT0rmWpJlnrcg-KWNVP1DORkkcX/exec";
+    let globalOrders = [];
+
+    async function fetchOrders() {
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const crmName = urlParams.get('crm');
+        if (!crmName) {
+            throw new Error('CRM name is missing in URL');
+        }
+        // Append crmName to the API URL
+        const response = await fetch(`${API_URL}?crm=${encodeURIComponent(crmName)}`);
+        const result = await response.json();
+        if (result.status === "success") {
+          document.getElementById("loader").classList.add("hidden");
+          document.getElementById("ordersContainer").classList.remove("hidden");
+          globalOrders = result.data;
+          renderOrders(globalOrders);
+        } else {
+          throw new Error("Invalid response");
+        }
+      } catch (err) {
+        document.getElementById("loader").innerText = "Failed to load orders.";
+        console.error(err);
+      }
+    }
+
+    function getDeadline(originalTimestampStr) {
+      const original = new Date(originalTimestampStr);
+      let deadline = new Date(original);
+      const day = original.getUTCDay(); // 1 = Monday
+
+      // If timestamp is Monday (1), subtract 2 days
+      if (day === 1) {
+        deadline.setDate(deadline.getDate() - 2);
+      } else {
+        deadline.setDate(deadline.getDate() - 1);
+      }
+
+      deadline.setHours(18, 0, 0, 0); // 6:00 PM
+      return deadline;
+    }
+
+    function renderOrders(orders) {
+      const container = document.getElementById("ordersContainer");
+      container.innerHTML = "";
+
+      orders.forEach((order, index) => {
+        const deadline = getDeadline(order.timestamp);
+
+        const card = document.createElement("div");
+        card.className = "bg-white p-6 rounded-2xl shadow-md relative transition hover:scale-[1.02]";
+
+        const overdue = new Date() > deadline;
+        const deadlineLabel = overdue ? "Overdue" : "Active";
+
+        card.innerHTML = `
+          <div class="absolute top-2 right-2 text-sm font-semibold px-3 py-1 rounded-full ${overdue ? 'bg-red-200 text-red-800' : 'bg-green-200 text-green-800'}">
+            ${deadlineLabel}
+          </div>
+          <div class="text-xl font-bold mb-2">${order.dealerName}</div>
+          <p><strong>Marketing:</strong> ${order.marketingPersonName}</p>
+          <p><strong>Location:</strong> ${order.location}</p>
+          <p><strong>CRM:</strong> ${order.crmName}</p>
+          <p><strong>Dispatch Date & Time:</strong> ${new Date(order.timestamp).toLocaleString()}</p>
+          <p><strong>Deadline:</strong> ${deadline.toLocaleString()}</p>
+          <p><strong>Time Left:</strong> <span id="countdown-${index}" class="font-mono text-blue-700"></span></p>
+        `;
+        container.appendChild(card);
+        startCountdown(deadline, index);
+      });
+    }
+
+    function startCountdown(deadline, index) {
+      const el = document.getElementById(`countdown-${index}`);
+      function update() {
+        const now = new Date();
+        const diff = deadline - now;
+        if (diff <= 0) {
+          el.innerText = "00:00:00";
+          el.classList.add("text-red-500");
+          return;
+        }
+        const h = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, "0");
+        const m = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, "0");
+        const s = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, "0");
+        el.innerText = `${h}:${m}:${s}`;
+      }
+      update();
+      setInterval(update, 1000);
+    }
+    fetchOrders();
+  </script>
+</body>
+</html>

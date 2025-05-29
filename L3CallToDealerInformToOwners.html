@@ -46,8 +46,9 @@
         
         .orders-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 20px;
+            width: 100%;
         }
         
         .order-card {
@@ -56,6 +57,8 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             padding: 20px;
             transition: transform 0.2s;
+            width: 100%;
+            min-height: 200px; /* or whatever minimum height you prefer */
         }
         
         .order-card:hover {
@@ -258,6 +261,7 @@
                         <div class="countdown-label">Time Remaining:</div>
                         <div class="countdown-timer" id="countdown-${index}">Calculating...</div>
                     </div>
+                </div>
                 `).join('');
             content.innerHTML = `<div class="orders-grid">${ordersHTML}</div>`;
         }

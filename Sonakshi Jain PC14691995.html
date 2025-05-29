@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Coordinator Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            min-height: calc(100vh - 100px);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        .coming-soon {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #7f8c8d;
+        }
+
+        .coming-soon-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .coming-soon h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: #95a5a6;
+        }
+
+        .coming-soon p {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .crm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .crm-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e8edff 100%);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 2px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .crm-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .crm-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .crm-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .crm-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .crm-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .crm-status {
+            font-size: 0.8rem;
+            color: #27ae60;
+            font-weight: 500;
+        }
+
+        .level-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .level-btn {
+            padding: 0.6rem 0.8rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            position: relative;
+            overflow: hidden;
+            /* Default black color for all buttons */
+            background: linear-gradient(45deg, #34495e, #2c3e50);
+            color: white;
+        }
+
+        .level-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .level-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Red color for pending orders - will be applied dynamically */
+        .level-btn.has-pending {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            animation: pulse 2s infinite;
+        }
+
+        .level-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .placeholder-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px dashed #dee2e6;
+            color: #6c757d;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+        }
+
+        .placeholder-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+                gap: 1.5rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .section {
+                padding: 1.5rem;
+            }
+            
+            .crm-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .level-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .section {
+                padding: 1rem;
+                border-radius: 15px;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+            
+            .level-btn {
+                padding: 0.8rem;
+                font-size: 0.7rem;
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">📊 Process Coordinator Hub</div>
+            <div class="user-info">
+                <div class="user-avatar">PC</div>
+                <span>Process Coordinator</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Purchase Orders Section -->
+        <section class="section floating">
+            <h2 class="section-title">
+                <div class="icon">🛒</div>
+                Purchase Orders Monitoring
+            </h2>
+            <div class="coming-soon">
+                <div class="coming-soon-icon pulse">🚀</div>
+                <h3>Coming Soon!</h3>
+                <p>Advanced purchase order monitoring system is under development</p>
+            </div>
+        </section>
+
+        <!-- Sales Orders Section -->
+        <section class="section">
+            <h2 class="section-title">
+                <div class="icon">📈</div>
+                Sales Orders Monitoring
+            </h2>
+            
+            <!-- Sales Coordinator Monitoring Section -->
+            <div style="background: linear-gradient(135deg, #e8f5e8 0%, #d4f1d4 100%); border-radius: 15px; padding: 1.5rem; margin-bottom: 2rem; border: 2px solid rgba(39, 174, 96, 0.1); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #27ae60, #2ecc71);"></div>
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                    <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(45deg, #27ae60, #2ecc71); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.9rem;">SC</div>
+                    <div>
+                        <div style="font-size: 1.1rem; font-weight: 600; color: #2c3e50;">Sales Coordinator's Working</div>
+                        <div style="font-size: 0.8rem; color: #27ae60; font-weight: 500;">● Central Monitoring Hub</div>
+                    </div>
+                </div>
+                <a href="https://ntwoods.github.io/pc/L1SC.html" target="_blank" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.5rem; background: linear-gradient(45deg, #27ae60, #2ecc71); color: white; text-decoration: none; border-radius: 10px; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);">
+                    <span>📊</span> Monitor Sales Coordinator Dashboard
+                </a>
+            </div>
+
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: #34495e; font-weight: 600;">
+                👥 Monitor Individual CRM's Working
+            </h3>
+            
+            <div class="crm-grid">
+                <!-- Priyam Dixit Card -->
+                <div class="crm-card">
+                    <div class="crm-header">
+                        <div class="crm-avatar">PD</div>
+                        <div>
+                            <div class="crm-name">Priyam Dixit</div>
+                            <div class="crm-status">● Active CRM</div>
+                        </div>
+                    </div>
+                    <div class="level-buttons" style="grid-template-columns: 1fr 1fr; gap: 0.4rem;">
+                        <a href="https://ntwoods.github.io/pc/L2ApprovalPending.html?crm=Priyam%20Dixit" class="level-btn" target="_blank" id="priyam-level34-btn">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                                <span>✅ L3-4 Approval</span>
+                                <span id="priyam-level34-count" style="font-size: 0.65rem; opacity: 0.9; font-weight: 600;">Loading...</span>
+                            </div>
+                        </a>
+                        <a href="https://ntwoods.github.io/pc/L3CallToDealerInformToOwners.html?crm=Priyam%20Dixit" class="level-btn" target="_blank" id="priyam-level5-btn">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                                <span>📞 L5 Dealer Call</span>
+                                <span id="priyam-level5-count" style="font-size: 0.65rem; opacity: 0.9; font-weight: 600;">Loading...</span>
+                            </div>
+                        </a>
+                        <a href="https://ntwoods.github.io/pc/L4TentativeDispatchDateSO.html?crm=Priyam%20Dixit" class="level-btn" target="_blank" id="priyam-level6-btn">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                                <span>📅 L6 Dispatch Date</span>
+                                <span id="priyam-level6-count" style="font-size: 0.65rem; opacity: 0.9; font-weight: 600;">Loading...</span>
+                            </div>
+                        </a>
+                        <a href="https://ntwoods.github.io/pc/L5ReminderToDispatchDepartment.html?crm=Priyam%20Dixit" class="level-btn" target="_blank" id="priyam-level7-btn">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                                <span>⏰ L7 Reminder</span>
+                                <span id="priyam-level7-count" style="font-size: 0.65rem; opacity: 0.9; font-weight: 600;">Loading...</span>
+                            </div>
+                        </a>
+                        <a href="https://ntwoods.github.io/pc/L6DispatchDetailsSharedToDealer.html?crm=Priyam%20Dixit" class="level-btn" target="_blank" style="grid-column: 1 / -1;" id="priyam-level8-btn">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                                <span>🚚 L8 Dispatch Details</span>
+                                <span id="priyam-level8-count" style="font-size: 0.65rem; opacity: 0.9; font-weight: 600;">Loading...</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Km Kalpana Card -->
+                <div class="crm-card">
+                    <div class="crm-header">
+                        <div class="crm-avatar">PD</div>
+                        <div>
+                            <div class="crm-name">Km Kalpana</div>
+                            <div class="crm-status">● Active CRM</div>
+                        </div>
+                    </div>
+                    <div class="level-buttons" style="grid-template-columns: 1fr 1fr; gap: 0.4rem;">
+                        <a href="https://ntwoods.github.io/pc/L2ApprovalPending.html?crm=Km%20Kalpana" class="level-btn" target="_blank" id="kalpana-level34-btn">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                                <span>✅ L3-4 Approval</span>
+                                <span id="kalpana-level34-count" style="font-size: 0.65rem; opacity: 0.9; font-weight: 600;">Loading...</span>
+                            </div>
+                        </a>
+                        <a href="https://ntwoods.github.io/pc/L3CallToDealerInformToOwners.html?crm=Km%20Kalpana" class="level-btn" target="_blank" id="kalpana-level5-btn">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                                <span>📞 L5 Dealer Call</span>
+                                <span id="kalpana-level5-count" style="font-size: 0.65rem; opacity: 0.9; font-weight: 600;">Loading...</span>
+                            </div>
+                        </a>
+                        <a href="https://ntwoods.github.io/pc/L4TentativeDispatchDateSO.html?crm=Km%20Kalpana" class="level-btn" target="_blank" id="kalpana-level6-btn">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                                <span>📅 L6 Dispatch Date</span>
+                                <span id="kalpana-level6-count" style="font-size: 0.65rem; opacity: 0.9; font-weight: 600;">Loading...</span>
+                            </div>
+                        </a>
+                        <a href="https://ntwoods.github.io/pc/L5ReminderToDispatchDepartment.html?crm=Km%20Kalpana" class="level-btn" target="_blank" id="kalpana-level7-btn">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                                <span>⏰ L7 Reminder</span>
+                                <span id="kalpana-level7-count" style="font-size: 0.65rem; opacity: 0.9; font-weight: 600;">Loading...</span>
+                            </div>
+                        </a>
+                        <a href="https://ntwoods.github.io/pc/L6DispatchDetailsSharedToDealer.html?crm=Km%20Kalpana" class="level-btn" target="_blank" style="grid-column: 1 / -1;" id="kalpana-level8-btn">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.2rem;">
+                                <span>🚚 L8 Dispatch Details</span>
+                                <span id="kalpana-level8-count" style="font-size: 0.65rem; opacity: 0.9; font-weight: 600;">Loading...</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Parakh Sir Placeholder -->
+                <div class="crm-card placeholder-card">
+                    <div class="placeholder-icon">👤</div>
+                    <div class="crm-name">Upcoming CRM</div>
+                    <p style="font-size: 0.8rem; margin-top: 0.5rem;">Dashboard links will be added soon</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Professional Footer -->
+    <footer style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-top: 1px solid rgba(0, 0, 0, 0.1); padding: 1.5rem 2rem; margin-top: 2rem;">
+        <div style="max-width: 1400px; margin: 0 auto; text-align: center;">
+            <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
+                <div style="font-size: 0.9rem; color: #2c3e50; font-weight: 500;">
+                    Designed & Developed by <span style="color: #667eea; font-weight: 600;">Kuldeep Sharma</span>
+                </div>
+                <div style="font-size: 0.8rem; color: #7f8c8d; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
+                    <span>© 2025 All Rights Reserved</span>
+                    <span style="color: #bdc3c7;">•</span>
+                    <span style="font-weight: 600; color: #34495e;">N.T. Woods Pvt. Ltd.</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        // API Integration for Real-time Counts
+        const apiEndpoints = {
+            priyam: {
+                level34: 'https://script.google.com/macros/s/AKfycby7o8IwfJ1vgI-_2Ad-epHZHmOdVqTbNVWnncuv4BnDIiIcWNmuzrEspA9jIvgy9G84eQ/exec?crm=Priyam%20Dixit',
+                level5: 'https://script.google.com/macros/s/AKfycbwuVRnAkiEKnTNy6yPBiPxA6BHIim4OlHjx1B3duF0Qt81itDZzgESH_g6pGWDkKhTs/exec?crm=Priyam%20Dixit',
+                level6: 'https://script.google.com/macros/s/AKfycbxkduAfhEpEtxKXA_HuIm-lZQj62ZPZwXeZ_Fol-v6VrzfhoXY2lffR64pjPahKV2o/exec?crm=Priyam%20Dixit',
+                level7: 'https://script.google.com/macros/s/AKfycbxMxIzOQmHv3LPTh6ca6i5uuguyH615cnjA5emEGNT0rmWpJlnrcg-KWNVP1DORkkcX/exec?crm=Priyam%20Dixit',
+                level8: 'https://script.google.com/macros/s/AKfycbwUr0UhENK6RGtdvYMC6-V0Khwb3kibKP4SLXC4nzL6Hm4idr6P-Olx4XTWvgZ_e2xk-Q/exec?crm=Priyam%20Dixit'
+            },
+            kalpana: {
+                level34: 'https://script.google.com/macros/s/AKfycby7o8IwfJ1vgI-_2Ad-epHZHmOdVqTbNVWnncuv4BnDIiIcWNmuzrEspA9jIvgy9G84eQ/exec?crm=Km%20Kalpana',
+                level5: 'https://script.google.com/macros/s/AKfycbwuVRnAkiEKnTNy6yPBiPxA6BHIim4OlHjx1B3duF0Qt81itDZzgESH_g6pGWDkKhTs/exec?crm=Km%20Kalpana',
+                level6: 'https://script.google.com/macros/s/AKfycbxkduAfhEpEtxKXA_HuIm-lZQj62ZPZwXeZ_Fol-v6VrzfhoXY2lffR64pjPahKV2o/exec?crm=Km%20Kalpana',
+                level7: 'https://script.google.com/macros/s/AKfycbxMxIzOQmHv3LPTh6ca6i5uuguyH615cnjA5emEGNT0rmWpJlnrcg-KWNVP1DORkkcX/exec?crm=Km%20Kalpana',
+                level8: 'https://script.google.com/macros/s/AKfycbwUr0UhENK6RGtdvYMC6-V0Khwb3kibKP4SLXC4nzL6Hm4idr6P-Olx4XTWvgZ_e2xk-Q/exec?crm=Km%20Kalpana'
+            }
+        };
+
+        async function fetchAndUpdateCount(url, elementId) {
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                const count = Array.isArray(data.data) ? data.data.length : 0;
+                const element = document.getElementById(elementId);
+                
+                if (element) {
+                    // Update the count text
+                    element.innerText = count > 0 ? `Pending: ${count}` : 'All Clear ✓';
+                    element.style.color = '#ffffff';
+                    
+                    // Get the button element (parent of parent of element)
+                    const buttonElement = element.closest('.level-btn');
+                    
+                    if (buttonElement) {
+                        // Remove existing has-pending class first
+                        buttonElement.classList.remove('has-pending');
+                        
+                        // Add red styling and pulse animation for pending items
+                        if (count > 0) {
+                            buttonElement.classList.add('has-pending');
+                            buttonElement.style.background = 'linear-gradient(45deg, #e74c3c, #c0392b)';
+                            buttonElement.style.animation = 'pulse 2s infinite';
+                        } else {
+                            // Reset to default black styling for no pending items
+                            buttonElement.style.background = 'linear-gradient(45deg, #34495e, #2c3e50)';
+                            buttonElement.style.animation = 'none';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error(`Error fetching data for ${elementId}:`, error);
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.innerText = 'Error';
+                    element.style.color = '#ef4444';
+                    
+                    // Reset button styling on error
+                    const buttonElement = element.closest('.level-btn');
+                    if (buttonElement) {
+                        buttonElement.classList.remove('has-pending');
+                        buttonElement.style.background = 'linear-gradient(45deg, #34495e, #2c3e50)';
+                        buttonElement.style.animation = 'none';
+                    }
+                }
+            }
+        }
+
+        // Function to load all counts
+        function loadAllCounts() {
+            // Priyam Dixit counts
+            fetchAndUpdateCount(apiEndpoints.priyam.level34, 'priyam-level34-count');
+            fetchAndUpdateCount(apiEndpoints.priyam.level5, 'priyam-level5-count');
+            fetchAndUpdateCount(apiEndpoints.priyam.level6, 'priyam-level6-count');
+            fetchAndUpdateCount(apiEndpoints.priyam.level7, 'priyam-level7-count');
+            fetchAndUpdateCount(apiEndpoints.priyam.level8, 'priyam-level8-count');
+
+            // Km Kalpana counts
+            fetchAndUpdateCount(apiEndpoints.kalpana.level34, 'kalpana-level34-count');
+            fetchAndUpdateCount(apiEndpoints.kalpana.level5, 'kalpana-level5-count');
+            fetchAndUpdateCount(apiEndpoints.kalpana.level6, 'kalpana-level6-count');
+            fetchAndUpdateCount(apiEndpoints.kalpana.level7, 'kalpana-level7-count');
+            fetchAndUpdateCount(apiEndpoints.kalpana.level8, 'kalpana-level8-count');
+        }
+
+        // Load counts initially
+        setTimeout(loadAllCounts, 1000);
+
+        // Refresh counts every 30 seconds
+        setInterval(loadAllCounts, 30000);
+
+        // Add smooth animations on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.crm-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+
+            // Add click feedback
+            const buttons = document.querySelectorAll('.level-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const ripple = document.createElement('span');
+                    ripple.style.position = 'absolute';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.background = 'rgba(255,255,255,0.6)';
+                    ripple.style.transform = 'scale(0)';
+                    ripple.style.animation = 'ripple 0.6s linear';
+                    ripple.style.left = (e.clientX - e.target.offsetLeft) + 'px';
+                    ripple.style.top = (e.clientY - e.target.offsetTop) + 'px';
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+
+        // Add ripple animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

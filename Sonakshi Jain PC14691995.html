@@ -406,7 +406,7 @@
                     <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(45deg, #f1c40f, #f39c12); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.9rem;">OA</div>
                     <div>
                         <div style="font-size: 1.1rem; font-weight: 600; color: #2c3e50;">Owner’s Approval Pending</div>
-                        <div style="font-size: 0.8rem; color: #f39c12; font-weight: 500;">● Sales Order Clearance</div>
+                        <span id="ownersApprovalPending" style="font-size: 0.65rem; opacity: 0.9; font-weight: 600;">Loading...</span>
                     </div>
                 </div>
                 <a href="https://ntwoods.github.io/ordertodispatch/OwnerApprovalSOview.html" target="_blank" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1.5rem; background: linear-gradient(45deg, #f1c40f, #f39c12); color: white; text-decoration: none; border-radius: 10px; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);">
@@ -549,7 +549,11 @@
                 level6: 'https://script.google.com/macros/s/AKfycbxkduAfhEpEtxKXA_HuIm-lZQj62ZPZwXeZ_Fol-v6VrzfhoXY2lffR64pjPahKV2o/exec?crm=Km%20Kalpana',
                 level7: 'https://script.google.com/macros/s/AKfycbxMxIzOQmHv3LPTh6ca6i5uuguyH615cnjA5emEGNT0rmWpJlnrcg-KWNVP1DORkkcX/exec?crm=Km%20Kalpana',
                 level8: 'https://script.google.com/macros/s/AKfycbwUr0UhENK6RGtdvYMC6-V0Khwb3kibKP4SLXC4nzL6Hm4idr6P-Olx4XTWvgZ_e2xk-Q/exec?crm=Km%20Kalpana'
+            },
+            owners: {
+                approvalPending: 'https://script.google.com/macros/s/AKfycbzg5k4acAaEEmWfIklLzd52NW4xPb1yK4JTp_7m3GegNkDE1fPnqXCYwrVwnA6UzoLg4g/exec',
             }
+
         };
 
         async function fetchAndUpdateCount(url, elementId) {
@@ -616,6 +620,8 @@
             fetchAndUpdateCount(apiEndpoints.kalpana.level6, 'kalpana-level6-count');
             fetchAndUpdateCount(apiEndpoints.kalpana.level7, 'kalpana-level7-count');
             fetchAndUpdateCount(apiEndpoints.kalpana.level8, 'kalpana-level8-count');
+            // Owners Pending SO
+            fetchAndUpdateCount(apiEndpoints.owners.approvalPending, 'ownersApprovalPending');
         }
 
         // Load counts initially

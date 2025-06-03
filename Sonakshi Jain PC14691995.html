@@ -314,6 +314,15 @@
             background: linear-gradient(90deg, #27ae60, #2ecc71);
         }
 
+        .purchase-order-card {
+            background: linear-gradient(135deg, #e8f5e8 0%, #d4f1d4 100%);
+            border: 2px solid rgba(39, 174, 96, 0.1);
+        }
+
+        .purchase-order-card::before {
+            background: linear-gradient(90deg, #27ae60, #2ecc71);
+        }
+        
         .owners-approval-card {
             background: linear-gradient(135deg, #fdf6e3 0%, #faecd4 100%);
             border: 2px solid rgba(241, 196, 15, 0.15);
@@ -345,7 +354,7 @@
         .sales-coordinator-avatar {
             background: linear-gradient(45deg, #27ae60, #2ecc71);
         }
-
+        
         .owners-approval-avatar {
             background: linear-gradient(45deg, #f1c40f, #f39c12);
         }
@@ -463,14 +472,21 @@
     <div class="container">
         <section class="section floating">
             <h2 class="section-title">
-                <div class="icon">🛒</div>
+                <div class="icon">🛍️</div>
                 Purchase Orders Monitoring
             </h2>
-            <div class="coming-soon">
-                <div class="coming-soon-icon pulse">🚀</div>
-                <h3>Coming Soon!</h3>
-                <p>Advanced purchase order monitoring system is under development</p>
-            </div>
+            <div class="summary-card purchase-order-card">
+                <div class="summary-header">
+                    <div class="summary-avatar purchase-verifier-avatar">PV</div>
+                    <div>
+                        <div class="summary-title">Purchase Order's Verification</div>
+                        <span id="purchaseOrderPending" style="font-size: 1rem; opacity: 0.9; font-weight: 800; color: black;">Loading...</span>
+                    </div>
+                </div>
+                <a href="https://google.co.in" target="_blank" class="summary-link purchase-order-link" id="purchase-order-link">
+                    <span>📊</span> Pending Purchase Orders
+                </a>
+            </div>     
         </section>
 
         <section class="section">
@@ -642,6 +658,9 @@
             },
             sales: {
                 salesCoordinator: 'https://script.google.com/macros/s/AKfycbwWKHlGOSpQ5Jcof9bqCDQp-Tnl8J4lCZZT7DnGIEg75DjXYjVrvRbbjefyjdKDDPpi/exec',
+            },
+            purchase: {
+                purchaseOrder: 'https://script.google.com/macros/s/AKfycbw2hdmC5ZgntoOVLSSqwwandWQpMEm5EteFACbpQ8-EYyvhytnbJPH2MX-snSTVuNnQyA/exec',
             }
 
         };
@@ -745,6 +764,8 @@
             fetchAndUpdateCount(apiEndpoints.owners.approvalPending, 'ownersApprovalPending', 'owners-approval-link');
             // Sales Coordinator Pending
             fetchAndUpdateCount(apiEndpoints.sales.salesCoordinator, 'salesCoordinatorPending', 'sales-coordinator-link');
+            // Sales Coordinator Pending
+            fetchAndUpdateCount(apiEndpoints.purchase.purchaseOrder, 'purchaseOrderPending', 'purchase-order-link');
         }
 
         // Load counts initially

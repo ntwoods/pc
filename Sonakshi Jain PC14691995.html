@@ -463,14 +463,21 @@
     <div class="container">
         <section class="section floating">
             <h2 class="section-title">
-                <div class="icon">🛒</div>
+                <div class="icon">🛍️</div>
                 Purchase Orders Monitoring
             </h2>
-            <div class="coming-soon">
-                <div class="coming-soon-icon pulse">🚀</div>
-                <h3>Coming Soon!</h3>
-                <p>Advanced purchase order monitoring system is under development</p>
-            </div>
+            <div class="summary-card sales-coordinator-card">
+                <div class="summary-header">
+                    <div class="summary-avatar purchase-verifier-avatar">PV</div>
+                    <div>
+                        <div class="summary-title">Purchase Order's Verification</div>
+                        <span id="purchaseOrderPending" style="font-size: 1rem; opacity: 0.9; font-weight: 800; color: black;">Loading...</span>
+                    </div>
+                </div>
+                <a href="https://google.co.in" target="_blank" class="summary-link purchase-order-link" id="purchase-order-link">
+                    <span>📊</span> Pending Purchase Orders
+                </a>
+            </div>     
         </section>
 
         <section class="section">
@@ -748,6 +755,8 @@
             fetchAndUpdateCount(apiEndpoints.owners.approvalPending, 'ownersApprovalPending', 'owners-approval-link');
             // Sales Coordinator Pending
             fetchAndUpdateCount(apiEndpoints.sales.salesCoordinator, 'salesCoordinatorPending', 'sales-coordinator-link');
+            // Sales Coordinator Pending
+            fetchAndUpdateCount(apiEndpoints.purchase.purchaseOrder, 'purchaseOrderPending', 'purchase-order-link');
         }
 
         // Load counts initially

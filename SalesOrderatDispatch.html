@@ -253,28 +253,6 @@
                             </p>
                         ` : ''}
                     </div>
-                    
-                    <div onclick="event.stopPropagation();">
-                        <div class="mb-3">
-                            <label class="block text-sm font-medium mb-1 text-gray-700">Expected Delivery Date:</label>
-                            <input type="date" id="delivery-${index}" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required/>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="block text-sm font-medium mb-1 text-gray-700">Dispatch Team Remark:</label>
-                            <input type="text" id="remark-${index}" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter any remarks..."/>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label class="file-upload-label">Attach Dispatch Receipt:</label>
-                            <input type="file" class="file-input" id="file-${index}" onchange="handleFileSelect(${index})" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xlsx,.xls">
-                            <div class="file-selected" id="file-selected-${index}">✓ File selected</div>
-                        </div>
-                        
-                        <button onclick="markDone(${index})" class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-200 font-medium">
-                            Mark Done
-                        </button>
-                    </div>
                 `;
 
                 orderCard.addEventListener('click', (event) => {

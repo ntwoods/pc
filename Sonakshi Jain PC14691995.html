@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Process Coordinator Dashboard</title>
     <style>
+        /* General styles */
         * {
             margin: 0;
             padding: 0;
@@ -19,6 +20,7 @@
             overflow-x: hidden;
         }
 
+        /* Header styles */
         .header {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -68,6 +70,7 @@
             font-size: 0.8rem;
         }
 
+        /* Container and Section styles */
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -128,6 +131,7 @@
             font-size: 0.8rem;
         }
 
+        /* Coming Soon/Placeholder styles */
         .coming-soon {
             text-align: center;
             padding: 4rem 2rem;
@@ -151,6 +155,7 @@
             opacity: 0.7;
         }
 
+        /* CRM Grid and Card styles */
         .crm-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -233,12 +238,12 @@
             text-decoration: none;
             text-align: center;
             display: flex;
+            flex-direction: column; /* Stack count below text */
             align-items: center;
             justify-content: center;
             gap: 0.3rem;
             position: relative;
             overflow: hidden;
-            /* Default black color for all buttons */
             background: linear-gradient(45deg, #34495e, #2c3e50);
             color: white;
         }
@@ -258,11 +263,19 @@
             left: 100%;
         }
 
-        /* Red color for pending orders - will be applied dynamically */
+        /* Red color for pending orders (CRM) - applied dynamically */
         .level-btn.has-pending {
-            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            background: linear-gradient(45deg, #e74c3c, #c0392b); /* Darker Red */
+            color: white; /* White text for pending */
             animation: pulse 2s infinite;
         }
+
+        /* Green color for all clear (CRM) - applied dynamically */
+	    .level-btn.all-clear {
+	        background: linear-gradient(45deg, #2ecc71, #27ae60); /* Green */
+	        color: white; /* White text for all clear */
+	    }
+
 
         .level-btn:hover {
             transform: translateY(-2px);
@@ -294,6 +307,7 @@
             margin-bottom: 2rem;
             position: relative;
             overflow: hidden;
+            transition: all 0.3s ease; /* Added for smooth color transitions */
         }
 
         .summary-card::before {
@@ -305,24 +319,140 @@
             height: 3px;
         }
 
-        .sales-coordinator-card {
-            background: linear-gradient(135deg, #e8f5e8 0%, #d4f1d4 100%);
-            border: 2px solid rgba(39, 174, 96, 0.1);
+        /* Sales Coordinator & Owner's Approval Default Styles */
+        .sales-coordinator-card, .owners-approval-card {
+             background: linear-gradient(135deg, #f8f9ff 0%, #e8edff 100%); /* Neutral default */
+             border: 2px solid rgba(102, 126, 234, 0.1);
+             color: #333;
+        }
+        .sales-coordinator-card::before, .owners-approval-card::before {
+            background: linear-gradient(90deg, #bbbbbb, #999999); /* Neutral default */
         }
 
-        .sales-coordinator-card::before {
-            background: linear-gradient(90deg, #27ae60, #2ecc71);
+
+        /* Specific styles for Sales Coordinator when pending */
+        .sales-coordinator-card.has-pending {
+            background: linear-gradient(135deg, #ffdde1 0%, #ffaaaa 100%); /* Light red */
+            border: 2px solid #e74c3c;
+            color: #fff; /* White text for pending */
+        }
+        .sales-coordinator-card.has-pending::before {
+            background: linear-gradient(90deg, #e74c3c, #c0392b); /* Red */
+        }
+        .sales-coordinator-card.has-pending .summary-title,
+        .sales-coordinator-card.has-pending .summary-header div span {
+            color: #fff !important; /* Force white text */
         }
 
-        .owners-approval-card {
-            background: linear-gradient(135deg, #fdf6e3 0%, #faecd4 100%);
-            border: 2px solid rgba(241, 196, 15, 0.15);
+
+        /* Specific styles for Sales Coordinator when all clear */
+        .sales-coordinator-card.all-clear {
+            background: linear-gradient(135deg, #e8f5e8 0%, #d4f1d4 100%); /* Light green */
+            border: 2px solid #27ae60;
+            color: #333; /* Darker text for better contrast with green */
+        }
+        .sales-coordinator-card.all-clear::before {
+            background: linear-gradient(90deg, #27ae60, #2ecc71); /* Green */
+        }
+        .sales-coordinator-card.all-clear .summary-title,
+        .sales-coordinator-card.all-clear .summary-header div span {
+             color: #333 !important; /* Force dark text */
         }
 
-        .owners-approval-card::before {
-            background: linear-gradient(90deg, #f1c40f, #f39c12);
+        /* Specific styles for Owner's Approval when pending */
+        .owners-approval-card.has-pending {
+            background: linear-gradient(135deg, #ffdde1 0%, #ffaaaa 100%); /* Light red */
+            border: 2px solid #e74c3c;
+            color: #fff; /* White text for pending */
         }
-        
+        .owners-approval-card.has-pending::before {
+            background: linear-gradient(90deg, #e74c3c, #c0392b); /* Red */
+        }
+        .owners-approval-card.has-pending .summary-title,
+        .owners-approval-card.has-pending .summary-header div span {
+            color: #fff !important; /* Force white text */
+        }
+
+        /* Specific styles for Owner's Approval when all clear */
+        .owners-approval-card.all-clear {
+            background: linear-gradient(135deg, #e8f5e8 0%, #d4f1d4 100%); /* Light green */
+            border: 2px solid #27ae60;
+            color: #333; /* Darker text for better contrast with green */
+        }
+        .owners-approval-card.all-clear::before {
+            background: linear-gradient(90deg, #27ae60, #2ecc71); /* Green */
+        }
+        .owners-approval-card.all-clear .summary-title,
+        .owners-approval-card.all-clear .summary-header div span {
+             color: #333 !important; /* Force dark text */
+        }
+
+
+        /* New styles for PO sections - these will be dynamically overridden */
+        /* Default generic styles for PO cards - colors will be set by JS */
+        .po-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%); /* Neutral default */
+            border: 2px solid rgba(0, 0, 0, 0.1);
+            color: #333; /* Default text color */
+        }
+        .po-card::before {
+            background: linear-gradient(90deg, #bbbbbb, #999999); /* Neutral default */
+        }
+
+        /* Specific styles for PO cards when pending */
+        .po-card.has-pending {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); /* Dark Red */
+            border: 2px solid #c0392b;
+            color: #fff; /* White text for better contrast */
+        }
+        .po-card.has-pending::before {
+            background: linear-gradient(90deg, #e74c3c, #c0392b); /* Red */
+        }
+        .po-card.has-pending .summary-title,
+        .po-card.has-pending .summary-header div span { /* Select both title and count span */
+            color: #fff !important; /* Force white text */
+        }
+
+        /* Specific styles for PO cards when all clear */
+        .po-card.all-clear {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); /* Dark Green */
+            border: 2px solid #27ae60;
+            color: #fff; /* White text for all clear */
+        }
+        .po-card.all-clear::before {
+            background: linear-gradient(90deg, #2ecc71, #27ae60); /* Green */
+        }
+        .po-card.all-clear .summary-title,
+        .po-card.all-clear .summary-header div span { /* Select both title and count span */
+             color: #fff !important; /* Force white text */
+        }
+
+        /* Avatars for PO sections - keeping original colors */
+        .po-verification-avatar {
+            background: linear-gradient(45deg, #00bcd4, #00acc1); /* Teal */
+        }
+
+        .po-send-supplier-avatar {
+            background: linear-gradient(45deg, #2196f3, #1976d2); /* Blue */
+        }
+
+        .po-dispatch-date-avatar {
+            background: linear-gradient(45deg, #9c27b0, #8e24aa); /* Purple */
+        }
+
+        .po-dispatch-followup-avatar {
+            background: linear-gradient(45deg, #f44336, #e53935); /* Red */
+        }
+
+        .po-lr-details-avatar {
+            background: linear-gradient(45deg, #ff5722, #f4511e); /* Deep Orange */
+        }
+
+        .po-acknowledgement-avatar {
+            background: linear-gradient(45deg, #4caf50, #43a047); /* Green */
+        }
+
+
         .summary-header {
             display: flex;
             align-items: center;
@@ -353,7 +483,7 @@
         .summary-title {
             font-size: 1.1rem;
             font-weight: 600;
-            color: #2c3e50;
+            color: #2c3e50; /* Default color, will be overridden by .has-pending/.all-clear classes */
         }
 
         .summary-link {
@@ -369,21 +499,35 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .sales-coordinator-link {
-            background: linear-gradient(45deg, #27ae60, #2ecc71);
-        }
-
-        .owners-approval-link {
-            background: linear-gradient(45deg, #f1c40f, #f39c12);
+        /* Links for PO sections - will be dynamically overridden */
+        /* Default background for PO links - these will change based on count */
+        .po-link {
+            background: linear-gradient(45deg, #34495e, #2c3e50); /* Neutral default */
         }
 
         /* Red/Pulse for summary links when pending */
         .summary-link.has-pending {
             background: linear-gradient(45deg, #e74c3c, #c0392b);
+            color: white; /* Ensure white text for pending links */
             animation: pulse 2s infinite;
         }
 
+        /* Green for summary links when all clear */
+        .summary-link.all-clear {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white; /* Ensure white text for all clear links */
+            animation: none; /* Remove pulse when all clear */
+        }
+        
+        /* Special handling for PO Acknowledgement link as it has no API */
+        .po-acknowledgement-link {
+            background: linear-gradient(45deg, #4caf50, #43a047); /* Always green */
+            color: white; /* Ensure white text */
+            animation: none;
+        }
 
+
+        /* Media Queries for responsiveness */
         @media (max-width: 768px) {
             .container {
                 grid-template-columns: 1fr;
@@ -429,6 +573,7 @@
             }
         }
 
+        /* Animations */
         .pulse {
             animation: pulse 2s infinite;
         }
@@ -446,6 +591,14 @@
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
+        }
+
+        /* Ripple effect for buttons */
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
         }
     </style>
 </head>
@@ -466,11 +619,83 @@
                 <div class="icon">🛒</div>
                 Purchase Orders Monitoring
             </h2>
-            <div class="coming-soon">
-                <div class="coming-soon-icon pulse">🚀</div>
-                <h3>Coming Soon!</h3>
-                <p>Advanced purchase order monitoring system is under development</p>
+            <div class="summary-card po-card" id="po-verification-card">
+                <div class="summary-header">
+                    <div class="summary-avatar po-verification-avatar">PV</div>
+                    <div>
+                        <div class="summary-title">Pending PO Requests for Verification</div>
+                        <span id="poVerificationPending" style="font-size: 1rem; opacity: 0.9; font-weight: 800;">Loading...</span>
+                    </div>
+                </div>
+                <a href="https://ntwoods.github.io/pc/poPendingForVerification" target="_blank" class="summary-link po-link" id="po-verification-link">
+                    <span>🔍</span> Monitor Verification Pending
+                </a>
             </div>
+
+            <div class="summary-card po-card" id="po-send-supplier-card">
+                <div class="summary-header">
+                    <div class="summary-avatar po-send-supplier-avatar">PS</div>
+                    <div>
+                        <div class="summary-title">Pending PO to Send to Suppliers</div>
+                        <span id="poSendSupplierPending" style="font-size: 1rem; opacity: 0.9; font-weight: 800;">Loading...</span>
+                    </div>
+                </div>
+                <a href="https://ntwoods.github.io/pc/POsendToSupplierPending.html" target="_blank" class="summary-link po-link" id="po-send-supplier-link">
+                    <span>✉️</span> View Pending POs
+                </a>
+            </div>
+
+            <div class="summary-card po-card" id="po-dispatch-date-card">
+                <div class="summary-header">
+                    <div class="summary-avatar po-dispatch-date-avatar">DD</div>
+                    <div>
+                        <div class="summary-title">Pending PO to Get Dispatch Date from Supplier</div>
+                        <span id="poDispatchDatePending" style="font-size: 1rem; opacity: 0.9; font-weight: 800;">Loading...</span>
+                    </div>
+                </div>
+                <a href="https://ntwoods.github.io/pc/pendingDispatchDatesForPO.html" target="_blank" class="summary-link po-link" id="po-dispatch-date-link">
+                    <span>🗓️</span> Monitor Dispatch Dates
+                </a>
+            </div>
+
+            <div class="summary-card po-card" id="po-dispatch-followup-card">
+                <div class="summary-header">
+                    <div class="summary-avatar po-dispatch-followup-avatar">DF</div>
+                    <div>
+                        <div class="summary-title">Pending PO for Dispatch Follow Up</div>
+                        <span id="poDispatchFollowUpPending" style="font-size: 1rem; opacity: 0.9; font-weight: 800;">Loading...</span>
+                    </div>
+                </div>
+                <a href="https://ntwoods.github.io/pc/poDispatchFollowUp.html" target="_blank" class="summary-link po-link" id="po-dispatch-followup-link">
+                    <span>📞</span> Follow Up on Dispatch
+                </a>
+            </div>
+
+            <div class="summary-card po-card" id="po-lr-details-card">
+                <div class="summary-header">
+                    <div class="summary-avatar po-lr-details-avatar">LR</div>
+                    <div>
+                        <div class="summary-title">PO Pending for Dispatch/LR Details</div>
+                        <span id="poLrDetailsPending" style="font-size: 1rem; opacity: 0.9; font-weight: 800;">Loading...</span>
+                    </div>
+                </div>
+                <a href="https://ntwoods.github.io/pc/POLRdetails&DispatchDetailsPending.html" target="_blank" class="summary-link po-link" id="po-lr-details-link">
+                    <span>📦</span> Add Dispatch/LR Details
+                </a>
+            </div>
+
+            <div class="summary-card po-acknowledgement-card">
+                <div class="summary-header">
+                    <div class="summary-avatar po-acknowledgement-avatar">RA</div>
+                    <div>
+                        <div class="summary-title">Purchase Orders Receiving Acknowledgement</div>
+                        <span style="font-size: 1rem; opacity: 0.9; font-weight: 800; color: white;">Monitor Directly</span> </div>
+                </div>
+                <a href="https://ntwoods.github.io/PurchaseOrders/WatchOnPurchaseOrders" target="_blank" class="summary-link po-acknowledgement-link" id="po-acknowledgement-link">
+                    <span>✔️</span> View Acknowledgement
+                </a>
+            </div>
+
         </section>
 
         <section class="section">
@@ -479,28 +704,26 @@
                 Sales Orders Monitoring
             </h2>
             
-            <div class="summary-card sales-coordinator-card">
-                <div class="summary-header">
+            <div class="summary-card sales-coordinator-card" id="sales-coordinator-card"> <div class="summary-header">
                     <div class="summary-avatar sales-coordinator-avatar">SC</div>
                     <div>
                         <div class="summary-title">Sales Coordinator's Working</div>
-                        <span id="salesCoordinatorPending" style="font-size: 1rem; opacity: 0.9; font-weight: 800; color: black;">Loading...</span>
+                        <span id="salesCoordinatorPending" style="font-size: 1rem; opacity: 0.9; font-weight: 800;">Loading...</span>
                     </div>
                 </div>
-                <a href="https://ntwoods.github.io/pc/L1SC.html" target="_blank" class="summary-link sales-coordinator-link" id="sales-coordinator-link">
+                <a href="https://ntwoods.github.io/pc/L1SC.html" target="_blank" class="summary-link" id="sales-coordinator-link">
                     <span>📊</span> Monitor Sales Coordinator Dashboard
                 </a>
             </div>
 
-            <div class="summary-card owners-approval-card">
-                <div class="summary-header">
+            <div class="summary-card owners-approval-card" id="owners-approval-card"> <div class="summary-header">
                     <div class="summary-avatar owners-approval-avatar">OA</div>
                     <div>
                         <div class="summary-title">Owner’s Approval Pending</div>
-                        <span id="ownersApprovalPending" style="font-size: 1rem; opacity: 0.9; font-weight: 800; color: black;">Loading...</span>
+                        <span id="ownersApprovalPending" style="font-size: 1rem; opacity: 0.9; font-weight: 800;">Loading...</span>
                     </div>
                 </div>
-                <a href="https://ntwoods.github.io/ordertodispatch/OwnerApprovalSOview.html" target="_blank" class="summary-link owners-approval-link" id="owners-approval-link">
+                <a href="https://ntwoods.github.io/ordertodispatch/OwnerApprovalSOview.html" target="_blank" class="summary-link" id="owners-approval-link">
                     <span>📝</span> View Pending Sales Orders
                 </a>
             </div>
@@ -642,84 +865,98 @@
             },
             sales: {
                 salesCoordinator: 'https://script.google.com/macros/s/AKfycbwWKHlGOSpQ5Jcof9bqCDQp-Tnl8J4lCZZT7DnGIEg75DjXYjVrvRbbjefyjdKDDPpi/exec',
+            },
+            // New PO API Endpoints - Updated with the specific API for verification
+            po: {
+                verification: 'https://script.google.com/macros/s/AKfycbw2hdmC5ZgntoOVLSSqwwandWQpMEm5EteFACbpQ8-EYyvhytnbJPH2MX-snSTVuNnQyA/exec',
+                sendToSupplier: 'https://script.google.com/macros/s/AKfycbzwhv2y4qc_mNMa9TUAezVA1EUvHReTkYTCcDj8zVYT1zyb3MSaouMYhvDV3ZcyVr0T/exec',
+                dispatchDate: 'https://script.google.com/macros/s/AKfycbwyskduPHfiIO3d8tuLY4dA0pbRKQeK1ZUvkUXPJFYs5NEPo8eJBCt_dT2UzuJaBub1/exec',
+                dispatchFollowUp: 'https://script.google.com/macros/s/AKfycbwO1_MihNIerxTsnJQzuEnV2hf4UdaOzAwfDjtEXgQuxrJ499jCd3PB8_9j3kMeTdhX/exec',
+                lrDetails: 'https://script.google.com/macros/s/AKfycbwKB6wQPmrOXmMQ8bM43AMyWgtDobQJ96dPJXntgZpmyJRYogSz9qQHEqIn-OwBY67Qkw/exec'
             }
-
         };
 
-        async function fetchAndUpdateCount(url, elementId, linkId) {
+        async function fetchAndUpdateCount(url, elementId, linkId, cardId = null) {
+            const element = document.getElementById(elementId);
+            const linkElement = document.getElementById(linkId);
+            const cardElement = cardId ? document.getElementById(cardId) : null;
+
             try {
                 const response = await fetch(url);
-                const data = await response.json();
-                const count = Array.isArray(data.data) ? data.data.length : 0;
-                const element = document.getElementById(elementId);
-                const linkElement = document.getElementById(linkId); // Get the link element
                 
-                if (element) {
-                    // Update the count text
-                    element.innerText = count > 0 ? `Pending: ${count}` : 'All Clear ✓';
-                    element.style.color = '#ffffff'; // Set text color to white
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
+                const data = await response.json();
+                let count = 0;
+
+                if (data.success && typeof data.count === 'number') {
+                    count = data.count;
+                } else if (Array.isArray(data.data)) {
+                    count = data.data.length;
+                }
+                
+                if (element) {
+                    element.innerText = count > 0 ? `Pending: ${count}` : 'All Clear ✓';
+                    // Text color for the count will be controlled by the card/link classes
+                    element.style.color = ''; // Reset to default to let CSS classes take over
+                }
+
+                // Apply classes to the link element
                 if (linkElement) {
-                    // For the specific CRM buttons
-                    if (linkElement.classList.contains('level-btn')) {
-                        if (count > 0) {
-                            linkElement.classList.add('has-pending');
-                            linkElement.style.animation = 'pulse 2s infinite';
-                        } else {
-                            linkElement.classList.remove('has-pending');
-                            linkElement.style.background = 'linear-gradient(45deg, #34495e, #2c3e50)';
-                            linkElement.style.animation = 'none';
-                        }
-                    } 
-                    // For the summary links (Sales Coordinator and Owner's Approval)
-                    else if (linkElement.classList.contains('summary-link')) {
-                        if (count > 0) {
-                            linkElement.classList.add('has-pending');
-                            linkElement.style.animation = 'pulse 2s infinite';
-                            // Ensure the count text in these sections is also white when red
-                            if (element) {
-                                element.style.color = 'white';
-                            }
-                        } else {
-                            linkElement.classList.remove('has-pending');
-                            // Revert to original background colors if all clear
-                            if (linkId === 'sales-coordinator-link') {
-                                linkElement.style.background = 'linear-gradient(45deg, #27ae60, #2ecc71)';
-                            } else if (linkId === 'owners-approval-link') {
-                                linkElement.style.background = 'linear-gradient(45deg, #f1c40f, #f39c12)';
-                            }
-                            linkElement.style.animation = 'none';
-                            // Ensure the count text in these sections is black when clear
-                            if (element) {
-                                element.style.color = 'black';
-                            }
-                        }
+                    if (count > 0) {
+                        linkElement.classList.add('has-pending');
+                        linkElement.classList.remove('all-clear');
+                        linkElement.style.animation = 'pulse 2s infinite';
+                    } else {
+                        linkElement.classList.remove('has-pending');
+                        linkElement.classList.add('all-clear');
+                        linkElement.style.animation = 'none';
                     }
                 }
+
+                // Apply classes to the card element (for summary cards and PO cards)
+                if (cardElement) {
+                    if (count > 0) {
+                        cardElement.classList.add('has-pending');
+                        cardElement.classList.remove('all-clear');
+                    } else {
+                        cardElement.classList.remove('has-pending');
+                        cardElement.classList.add('all-clear');
+                    }
+                }
+
             } catch (error) {
                 console.error(`Error fetching data for ${elementId}:`, error);
-                const element = document.getElementById(elementId);
                 if (element) {
                     element.innerText = 'Error';
-                    element.style.color = '#ef4444';
+                    element.style.color = '#ef4444'; // Keep error text red
                 }
-                const linkElement = document.getElementById(linkId);
                 if (linkElement) {
-                    // Reset button styling on error
-                    if (linkElement.classList.contains('level-btn')) {
-                        linkElement.classList.remove('has-pending');
-                        linkElement.style.background = 'linear-gradient(45deg, #34495e, #2c3e50)';
-                        linkElement.style.animation = 'none';
-                    } else if (linkElement.classList.contains('summary-link')) {
-                        linkElement.classList.remove('has-pending');
-                        // Revert to original background on error for summary links
-                        if (linkId === 'sales-coordinator-link') {
-                            linkElement.style.background = 'linear-gradient(45deg, #27ae60, #2ecc71)';
-                        } else if (linkId === 'owners-approval-link') {
-                            linkElement.style.background = 'linear-gradient(45deg, #f1c40f, #f39c12)';
-                        }
-                        linkElement.style.animation = 'none';
+                    linkElement.classList.remove('has-pending');
+                    linkElement.classList.remove('all-clear');
+                    linkElement.style.animation = 'none';
+                    // Revert to neutral background on error for links
+                    linkElement.style.background = 'linear-gradient(45deg, #34495e, #2c3e50)';
+                    linkElement.style.color = 'white'; // Ensure text is visible on neutral background
+                }
+                if (cardElement) {
+                    cardElement.classList.remove('has-pending');
+                    cardElement.classList.remove('all-clear');
+                    // Revert to default neutral background for cards on error
+                    cardElement.style.background = 'linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%)';
+                    cardElement.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+                    cardElement.style.color = '#333'; // Default text color for card
+                    if (cardElement.querySelector('.summary-title')) {
+                        cardElement.querySelector('.summary-title').style.color = '#333'; // Default title color
+                    }
+                    if (cardElement.querySelector('.summary-header div span')) {
+                        cardElement.querySelector('.summary-header div span').style.color = '#ef4444'; // Error text color for count
+                    }
+                    // Reset before pseudo-element background if applicable
+                    if (cardElement.classList.contains('po-card') || cardElement.classList.contains('sales-coordinator-card') || cardElement.classList.contains('owners-approval-card')) {
+                         cardElement.style.setProperty('--before-background', 'linear-gradient(90deg, #bbbbbb, #999999)');
                     }
                 }
             }
@@ -727,14 +964,14 @@
 
         // Function to load all counts
         function loadAllCounts() {
-            // Priyam Dixit counts
+            // Priyam Dixit counts (Sales Orders)
             fetchAndUpdateCount(apiEndpoints.priyam.level34, 'priyam-level34-count', 'priyam-level34-btn');
             fetchAndUpdateCount(apiEndpoints.priyam.level5, 'priyam-level5-count', 'priyam-level5-btn');
             fetchAndUpdateCount(apiEndpoints.priyam.level6, 'priyam-level6-count', 'priyam-level6-btn');
             fetchAndUpdateCount(apiEndpoints.priyam.level7, 'priyam-level7-count', 'priyam-level7-btn');
             fetchAndUpdateCount(apiEndpoints.priyam.level8, 'priyam-level8-count', 'priyam-level8-btn');
 
-            // Km Kalpana counts
+            // Km Kalpana counts (Sales Orders)
             fetchAndUpdateCount(apiEndpoints.kalpana.level34, 'kalpana-level34-count', 'kalpana-level34-btn');
             fetchAndUpdateCount(apiEndpoints.kalpana.level5, 'kalpana-level5-count', 'kalpana-level5-btn');
             fetchAndUpdateCount(apiEndpoints.kalpana.level6, 'kalpana-level6-count', 'kalpana-level6-btn');
@@ -742,9 +979,39 @@
             fetchAndUpdateCount(apiEndpoints.kalpana.level8, 'kalpana-level8-count', 'kalpana-level8-btn');
             
             // Owners Pending SO
-            fetchAndUpdateCount(apiEndpoints.owners.approvalPending, 'ownersApprovalPending', 'owners-approval-link');
+            fetchAndUpdateCount(apiEndpoints.owners.approvalPending, 'ownersApprovalPending', 'owners-approval-link', 'owners-approval-card');
             // Sales Coordinator Pending
-            fetchAndUpdateCount(apiEndpoints.sales.salesCoordinator, 'salesCoordinatorPending', 'sales-coordinator-link');
+            fetchAndUpdateCount(apiEndpoints.sales.salesCoordinator, 'salesCoordinatorPending', 'sales-coordinator-link', 'sales-coordinator-card');
+
+            // PO Counts
+            fetchAndUpdateCount(apiEndpoints.po.verification, 'poVerificationPending', 'po-verification-link', 'po-verification-card');
+            fetchAndUpdateCount(apiEndpoints.po.sendToSupplier, 'poSendSupplierPending', 'po-send-supplier-link', 'po-send-supplier-card');
+            fetchAndUpdateCount(apiEndpoints.po.dispatchDate, 'poDispatchDatePending', 'po-dispatch-date-link', 'po-dispatch-date-card');
+            fetchAndUpdateCount(apiEndpoints.po.dispatchFollowUp, 'poDispatchFollowUpPending', 'po-dispatch-followup-link', 'po-dispatch-followup-card');
+            fetchAndUpdateCount(apiEndpoints.po.lrDetails, 'poLrDetailsPending', 'po-lr-details-link', 'po-lr-details-card');
+            
+            // For the acknowledgement link, as there's no API, we will manually set its "all-clear" state
+            const poAcknowledgementLink = document.getElementById('po-acknowledgement-link');
+            const poAcknowledgementCard = document.querySelector('.po-acknowledgement-card');
+            if (poAcknowledgementLink) {
+                 poAcknowledgementLink.classList.remove('has-pending'); // Ensure no pending style
+                 poAcknowledgementLink.classList.add('all-clear'); // Consider it 'all clear' as it's monitor directly
+                 poAcknowledgementLink.style.animation = 'none'; // No pulse
+                 poAcknowledgementLink.style.background = 'linear-gradient(45deg, #4caf50, #43a047)'; // Ensure its default green background
+                 poAcknowledgementLink.style.color = 'white'; // Ensure white text
+            }
+            if (poAcknowledgementCard) {
+                poAcknowledgementCard.classList.remove('has-pending');
+                poAcknowledgementCard.classList.add('all-clear');
+                poAcknowledgementCard.style.background = 'linear-gradient(135deg, #2ecc71 0%, #27ae60 100%)'; /* Dark Green */
+                poAcknowledgementCard.style.border = '2px solid #27ae60';
+                poAcknowledgementCard.style.color = 'white'; // Make card text white
+                poAcknowledgementCard.querySelector('.summary-title').style.color = 'white'; // Make title white
+                if (poAcknowledgementCard.querySelector('.summary-header div span')) {
+                    poAcknowledgementCard.querySelector('.summary-header div span').style.color = 'white'; // Make 'Monitor Directly' text white
+                }
+                poAcknowledgementCard.style.setProperty('--before-background', 'linear-gradient(90deg, #4caf50, #43a047)'); /* Green */
+            }
         }
 
         // Load counts initially
@@ -755,7 +1022,7 @@
 
         // Add smooth animations on load
         document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.crm-card');
+            const cards = document.querySelectorAll('.crm-card, .summary-card'); // Include summary cards in animation
             cards.forEach((card, index) => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
@@ -766,7 +1033,7 @@
                 }, index * 150);
             });
 
-            // Add click feedback
+            // Add click feedback (ripple effect)
             const buttons = document.querySelectorAll('.level-btn, .summary-link');
             buttons.forEach(btn => {
                 btn.addEventListener('click', function(e) {
@@ -777,7 +1044,6 @@
                     ripple.style.transform = 'scale(0)';
                     ripple.style.animation = 'ripple 0.6s linear';
                     
-                    // Calculate position relative to the clicked element
                     const rect = this.getBoundingClientRect();
                     const size = Math.max(rect.width, rect.height);
                     ripple.style.width = ripple.style.height = `${size}px`;
@@ -792,18 +1058,6 @@
                 });
             });
         });
-
-        // Add ripple animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes ripple {
-                to {
-                    transform: scale(4);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>

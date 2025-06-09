@@ -80,7 +80,7 @@ body {
     margin: 0 auto;
     padding: 2rem;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr; /* Adjusted for better spacing with new card */
     gap: 2rem;
     min-height: calc(100vh - 100px);
 }
@@ -379,18 +379,18 @@ body {
 }
 
 /* Default styles for summary cards */
-.sales-coordinator-card, .owners-approval-card {
+.sales-coordinator-card, .owners-approval-card, .sales-dispatch-confirmation-card {
     background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
     border: 2px solid rgba(71, 85, 105, 0.3);
     color: #e2e8f0;
 }
 
-.sales-coordinator-card::before, .owners-approval-card::before {
+.sales-coordinator-card::before, .owners-approval-card::before, .sales-dispatch-confirmation-card::before {
     background: linear-gradient(90deg, #475569, #334155);
 }
 
 /* Enhanced pending states */
-.sales-coordinator-card.has-pending, .owners-approval-card.has-pending {
+.sales-coordinator-card.has-pending, .owners-approval-card.has-pending, .sales-dispatch-confirmation-card.has-pending {
     background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%);
     border: 2px solid rgba(239, 68, 68, 0.5);
     color: #fca5a5;
@@ -399,20 +399,22 @@ body {
         inset 0 1px 0 rgba(248, 113, 113, 0.2);
 }
 
-.sales-coordinator-card.has-pending::before, .owners-approval-card.has-pending::before {
+.sales-coordinator-card.has-pending::before, .owners-approval-card.has-pending::before, .sales-dispatch-confirmation-card.has-pending::before {
     background: linear-gradient(90deg, #991b1b, #7f1d1d);
 }
 
 .sales-coordinator-card.has-pending .summary-title,
 .sales-coordinator-card.has-pending .summary-header div span,
 .owners-approval-card.has-pending .summary-title,
-.owners-approval-card.has-pending .summary-header div span {
+.owners-approval-card.has-pending .summary-header div span,
+.sales-dispatch-confirmation-card.has-pending .summary-title,
+.sales-dispatch-confirmation-card.has-pending .summary-header div span {
     color: #fca5a5 !important;
     text-shadow: 0 0 10px rgba(252, 165, 165, 0.3);
 }
 
 /* Enhanced all-clear states */
-.sales-coordinator-card.all-clear, .owners-approval-card.all-clear {
+.sales-coordinator-card.all-clear, .owners-approval-card.all-clear, .sales-dispatch-confirmation-card.all-clear {
     background: linear-gradient(135deg, #14532d 0%, #052e16 100%);
     border: 2px solid rgba(34, 197, 94, 0.5);
     color: #86efac;
@@ -421,14 +423,16 @@ body {
         inset 0 1px 0 rgba(134, 239, 172, 0.2);
 }
 
-.sales-coordinator-card.all-clear::before, .owners-approval-card.all-clear::before {
+.sales-coordinator-card.all-clear::before, .owners-approval-card.all-clear::before, .sales-dispatch-confirmation-card.all-clear::before {
     background: linear-gradient(90deg, #166534, #14532d);
 }
 
 .sales-coordinator-card.all-clear .summary-title,
 .sales-coordinator-card.all-clear .summary-header div span,
 .owners-approval-card.all-clear .summary-title,
-.owners-approval-card.all-clear .summary-header div span {
+.owners-approval-card.all-clear .summary-header div span,
+.sales-dispatch-confirmation-card.all-clear .summary-title,
+.sales-dispatch-confirmation-card.all-clear .summary-header div span {
     color: #86efac !important;
     text-shadow: 0 0 10px rgba(134, 239, 172, 0.3);
 }
@@ -542,6 +546,11 @@ body {
     box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4);
 }
 
+.sales-dispatch-confirmation-avatar {
+    background: linear-gradient(45deg, #5a1d7c, #4a0d6e);
+    box-shadow: 0 6px 20px rgba(90, 29, 124, 0.4);
+}
+
 .summary-title {
     font-size: 1.1rem;
     font-weight: 600;
@@ -566,7 +575,7 @@ body {
     overflow: hidden;
 }
 
-.po-link {
+.po-link, .sales-link {
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
 }
 
@@ -797,7 +806,7 @@ body {
                         <span id="salesCoordinatorPending" style="font-size: 1rem; opacity: 0.9; font-weight: 800;">Loading...</span>
                     </div>
                 </div>
-                <a href="https://ntwoods.github.io/pc/L1SC.html" target="_blank" class="summary-link" id="sales-coordinator-link">
+                <a href="https://ntwoods.github.io/pc/L1SC.html" target="_blank" class="summary-link sales-link" id="sales-coordinator-link">
                     <span>📊</span> Monitor Sales Coordinator Dashboard
                 </a>
             </div>
@@ -809,12 +818,23 @@ body {
                         <span id="ownersApprovalPending" style="font-size: 1rem; opacity: 0.9; font-weight: 800;">Loading...</span>
                     </div>
                 </div>
-                <a href="https://ntwoods.github.io/ordertodispatch/OwnerApprovalSOview.html" target="_blank" class="summary-link" id="owners-approval-link">
+                <a href="https://ntwoods.github.io/ordertodispatch/OwnerApprovalSOview.html" target="_blank" class="summary-link sales-link" id="owners-approval-link">
                     <span>📝</span> View Pending Sales Orders
                 </a>
             </div>
 
-
+            <div class="summary-card sales-dispatch-confirmation-card" id="sales-dispatch-confirmation-card">
+                <div class="summary-header">
+                    <div class="summary-avatar sales-dispatch-confirmation-avatar">SD</div>
+                    <div>
+                        <div class="summary-title">Sales Orders Pending for Dispatch Confirmation</div>
+                        <span id="salesDispatchConfirmationPending" style="font-size: 1rem; opacity: 0.9; font-weight: 800;">Loading...</span>
+                    </div>
+                </div>
+                <a href="https://ntwoods.github.io/pc/SalesOrderatDispatch" target="_blank" class="summary-link sales-link" id="sales-dispatch-confirmation-link">
+                    <span>🚚</span> View Dispatch Confirmation
+                </a>
+            </div>
             <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: #34495e; font-weight: 600;">
                 👥 Monitor Individual CRM's Working
             </h3>
@@ -951,6 +971,8 @@ body {
             },
             sales: {
                 salesCoordinator: 'https://script.google.com/macros/s/AKfycbwWKHlGOSpQ5Jcof9bqCDQp-Tnl8J4lCZZT7DnGIEg75DjXYjVrvRbbjefyjdKDDPpi/exec',
+                // New API endpoint for Sales Orders Pending for Dispatch Confirmation
+                dispatchConfirmation: 'https://script.google.com/macros/s/AKfycbzuX9IvIK3aEoXA3TfzBvcAWcav_QhnuenbaYahJdeFL52Mu3KwkMpvIsVJZ7ni23M9Gg/exec'
             },
             // New PO API Endpoints - Updated with the specific API for verification
             po: {
@@ -1041,7 +1063,7 @@ body {
                         cardElement.querySelector('.summary-header div span').style.color = '#ef4444'; // Error text color for count
                     }
                     // Reset before pseudo-element background if applicable
-                    if (cardElement.classList.contains('po-card') || cardElement.classList.contains('sales-coordinator-card') || cardElement.classList.contains('owners-approval-card')) {
+                    if (cardElement.classList.contains('po-card') || cardElement.classList.contains('sales-coordinator-card') || cardElement.classList.contains('owners-approval-card') || cardElement.classList.contains('sales-dispatch-confirmation-card')) {
                          cardElement.style.setProperty('--before-background', 'linear-gradient(90deg, #bbbbbb, #999999)');
                     }
                 }
@@ -1068,6 +1090,9 @@ body {
             fetchAndUpdateCount(apiEndpoints.owners.approvalPending, 'ownersApprovalPending', 'owners-approval-link', 'owners-approval-card');
             // Sales Coordinator Pending
             fetchAndUpdateCount(apiEndpoints.sales.salesCoordinator, 'salesCoordinatorPending', 'sales-coordinator-link', 'sales-coordinator-card');
+            // Sales Orders Pending for Dispatch Confirmation
+            fetchAndUpdateCount(apiEndpoints.sales.dispatchConfirmation, 'salesDispatchConfirmationPending', 'sales-dispatch-confirmation-link', 'sales-dispatch-confirmation-card');
+
 
             // PO Counts
             fetchAndUpdateCount(apiEndpoints.po.verification, 'poVerificationPending', 'po-verification-link', 'po-verification-card');

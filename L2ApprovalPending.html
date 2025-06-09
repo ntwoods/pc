@@ -300,6 +300,7 @@ function createOrderCard(order, index) {
 }
 
         const isSunday = date => date.getDay() === 0;
+
         function calculateDeadline(timestamp) {
             const ts = new Date(timestamp);
             const hour = ts.getHours();
@@ -308,7 +309,7 @@ function createOrderCard(order, index) {
 
             let deadline = new Date(ts);
 
-            if (hour >= 16 || (hour === 23 && minute === 59)) {
+            if ((hour > 14 || (hour === 14 && minute >= 30)) &&  (hour < 24)) {
                 do {
                     deadline.setDate(deadline.getDate() + 1);
                 } while (isSunday(deadline));
@@ -321,7 +322,6 @@ function createOrderCard(order, index) {
 
             return deadline;
         }
-
         function startCountdown(elementId, deadline) {
             const interval = setInterval(() => {
                 const now = new Date();

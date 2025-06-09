@@ -5,601 +5,687 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Process Coordinator Dashboard</title>
     <style>
-        /* General styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-            overflow-x: hidden;
-        }
-
-        /* Header styles */
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            color: #666;
-        }
-
-        .user-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 0.8rem;
-        }
-
-        /* Container and Section styles */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            min-height: calc(100vh - 100px);
-        }
-
-        .section {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 20px 20px 0 0;
-        }
-
-        .section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .section-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            color: #2c3e50;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .icon {
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.8rem;
-        }
-
-        /* Coming Soon/Placeholder styles */
-        .coming-soon {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: #7f8c8d;
-        }
-
-        .coming-soon-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            opacity: 0.3;
-        }
-
-        .coming-soon h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-            color: #95a5a6;
-        }
-
-        .coming-soon p {
-            font-size: 0.9rem;
-            opacity: 0.7;
-        }
-
-        /* CRM Grid and Card styles */
-        .crm-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
-        }
-
-        .crm-card {
-            background: linear-gradient(135deg, #f8f9ff 0%, #e8edff 100%);
-            border-radius: 15px;
-            padding: 1.5rem;
-            border: 2px solid rgba(102, 126, 234, 0.1);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .crm-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-        }
-
-        .crm-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
-            border-color: rgba(102, 126, 234, 0.3);
-        }
-
-        .crm-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .crm-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .crm-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .crm-status {
-            font-size: 0.8rem;
-            color: #27ae60;
-            font-weight: 500;
-        }
-
-        .level-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-        }
-
-        .level-btn {
-            padding: 0.6rem 0.8rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            text-align: center;
-            display: flex;
-            flex-direction: column; /* Stack count below text */
-            align-items: center;
-            justify-content: center;
-            gap: 0.3rem;
-            position: relative;
-            overflow: hidden;
-            background: linear-gradient(45deg, #34495e, #2c3e50);
-            color: white;
-        }
-
-        .level-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .level-btn:hover::before {
-            left: 100%;
-        }
-
-        /* Red color for pending orders (CRM) - applied dynamically */
-        .level-btn.has-pending {
-            background: linear-gradient(45deg, #e74c3c, #c0392b); /* Darker Red */
-            color: white; /* White text for pending */
-            animation: pulse 2s infinite;
-        }
-
-        /* Green color for all clear (CRM) - applied dynamically */
-	    .level-btn.all-clear {
-	        background: linear-gradient(45deg, #2ecc71, #27ae60); /* Green */
-	        color: white; /* White text for all clear */
-	    }
-
-
-        .level-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .placeholder-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border: 2px dashed #dee2e6;
-            color: #6c757d;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 200px;
-        }
-
-        .placeholder-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            opacity: 0.5;
-        }
-
-        /* Custom styles for Sales Coordinator and Owner's Approval sections */
-        .summary-card {
-            border-radius: 15px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease; /* Added for smooth color transitions */
-        }
-
-        .summary-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-        }
-
-        /* Sales Coordinator & Owner's Approval Default Styles */
-        .sales-coordinator-card, .owners-approval-card {
-             background: linear-gradient(135deg, #f8f9ff 0%, #e8edff 100%); /* Neutral default */
-             border: 2px solid rgba(102, 126, 234, 0.1);
-             color: #333;
-        }
-        .sales-coordinator-card::before, .owners-approval-card::before {
-            background: linear-gradient(90deg, #bbbbbb, #999999); /* Neutral default */
-        }
-
-
-        /* Specific styles for Sales Coordinator when pending */
-        .sales-coordinator-card.has-pending {
-            background: linear-gradient(135deg, #ffdde1 0%, #ffaaaa 100%); /* Light red */
-            border: 2px solid #e74c3c;
-            color: #fff; /* White text for pending */
-        }
-        .sales-coordinator-card.has-pending::before {
-            background: linear-gradient(90deg, #e74c3c, #c0392b); /* Red */
-        }
-        .sales-coordinator-card.has-pending .summary-title,
-        .sales-coordinator-card.has-pending .summary-header div span {
-            color: #fff !important; /* Force white text */
-        }
-
-
-        /* Specific styles for Sales Coordinator when all clear */
-        .sales-coordinator-card.all-clear {
-            background: linear-gradient(135deg, #e8f5e8 0%, #d4f1d4 100%); /* Light green */
-            border: 2px solid #27ae60;
-            color: #333; /* Darker text for better contrast with green */
-        }
-        .sales-coordinator-card.all-clear::before {
-            background: linear-gradient(90deg, #27ae60, #2ecc71); /* Green */
-        }
-        .sales-coordinator-card.all-clear .summary-title,
-        .sales-coordinator-card.all-clear .summary-header div span {
-             color: #333 !important; /* Force dark text */
-        }
-
-        /* Specific styles for Owner's Approval when pending */
-        .owners-approval-card.has-pending {
-            background: linear-gradient(135deg, #ffdde1 0%, #ffaaaa 100%); /* Light red */
-            border: 2px solid #e74c3c;
-            color: #fff; /* White text for pending */
-        }
-        .owners-approval-card.has-pending::before {
-            background: linear-gradient(90deg, #e74c3c, #c0392b); /* Red */
-        }
-        .owners-approval-card.has-pending .summary-title,
-        .owners-approval-card.has-pending .summary-header div span {
-            color: #fff !important; /* Force white text */
-        }
-
-        /* Specific styles for Owner's Approval when all clear */
-        .owners-approval-card.all-clear {
-            background: linear-gradient(135deg, #e8f5e8 0%, #d4f1d4 100%); /* Light green */
-            border: 2px solid #27ae60;
-            color: #333; /* Darker text for better contrast with green */
-        }
-        .owners-approval-card.all-clear::before {
-            background: linear-gradient(90deg, #27ae60, #2ecc71); /* Green */
-        }
-        .owners-approval-card.all-clear .summary-title,
-        .owners-approval-card.all-clear .summary-header div span {
-             color: #333 !important; /* Force dark text */
-        }
-
-
-        /* New styles for PO sections - these will be dynamically overridden */
-        /* Default generic styles for PO cards - colors will be set by JS */
-        .po-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%); /* Neutral default */
-            border: 2px solid rgba(0, 0, 0, 0.1);
-            color: #333; /* Default text color */
-        }
-        .po-card::before {
-            background: linear-gradient(90deg, #bbbbbb, #999999); /* Neutral default */
-        }
-
-        /* Specific styles for PO cards when pending */
-        .po-card.has-pending {
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); /* Dark Red */
-            border: 2px solid #c0392b;
-            color: #fff; /* White text for better contrast */
-        }
-        .po-card.has-pending::before {
-            background: linear-gradient(90deg, #e74c3c, #c0392b); /* Red */
-        }
-        .po-card.has-pending .summary-title,
-        .po-card.has-pending .summary-header div span { /* Select both title and count span */
-            color: #fff !important; /* Force white text */
-        }
-
-        /* Specific styles for PO cards when all clear */
-        .po-card.all-clear {
-            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); /* Dark Green */
-            border: 2px solid #27ae60;
-            color: #fff; /* White text for all clear */
-        }
-        .po-card.all-clear::before {
-            background: linear-gradient(90deg, #2ecc71, #27ae60); /* Green */
-        }
-        .po-card.all-clear .summary-title,
-        .po-card.all-clear .summary-header div span { /* Select both title and count span */
-             color: #fff !important; /* Force white text */
-        }
-
-        /* Avatars for PO sections - keeping original colors */
-        .po-verification-avatar {
-            background: linear-gradient(45deg, #00bcd4, #00acc1); /* Teal */
-        }
-
-        .po-send-supplier-avatar {
-            background: linear-gradient(45deg, #2196f3, #1976d2); /* Blue */
-        }
-
-        .po-dispatch-date-avatar {
-            background: linear-gradient(45deg, #9c27b0, #8e24aa); /* Purple */
-        }
-
-        .po-dispatch-followup-avatar {
-            background: linear-gradient(45deg, #f44336, #e53935); /* Red */
-        }
-
-        .po-lr-details-avatar {
-            background: linear-gradient(45deg, #ff5722, #f4511e); /* Deep Orange */
-        }
-
-        .po-acknowledgement-avatar {
-            background: linear-gradient(45deg, #4caf50, #43a047); /* Green */
-        }
-
-
-        .summary-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .summary-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .sales-coordinator-avatar {
-            background: linear-gradient(45deg, #27ae60, #2ecc71);
-        }
-
-        .owners-approval-avatar {
-            background: linear-gradient(45deg, #f1c40f, #f39c12);
-        }
-
-        .summary-title {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #2c3e50; /* Default color, will be overridden by .has-pending/.all-clear classes */
-        }
-
-        .summary-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.8rem 1.5rem;
-            color: white;
-            text-decoration: none;
-            border-radius: 10px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Links for PO sections - will be dynamically overridden */
-        /* Default background for PO links - these will change based on count */
-        .po-link {
-            background: linear-gradient(45deg, #34495e, #2c3e50); /* Neutral default */
-        }
-
-        /* Red/Pulse for summary links when pending */
-        .summary-link.has-pending {
-            background: linear-gradient(45deg, #e74c3c, #c0392b);
-            color: white; /* Ensure white text for pending links */
-            animation: pulse 2s infinite;
-        }
-
-        /* Green for summary links when all clear */
-        .summary-link.all-clear {
-            background: linear-gradient(45deg, #2ecc71, #27ae60);
-            color: white; /* Ensure white text for all clear links */
-            animation: none; /* Remove pulse when all clear */
-        }
-        
-        /* Special handling for PO Acknowledgement link as it has no API */
-        .po-acknowledgement-link {
-            background: linear-gradient(45deg, #4caf50, #43a047); /* Always green */
-            color: white; /* Ensure white text */
-            animation: none;
-        }
-
-
-        /* Media Queries for responsiveness */
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-                padding: 1rem;
-                gap: 1.5rem;
-            }
-            
-            .header-content {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            
-            .section {
-                padding: 1.5rem;
-            }
-            
-            .crm-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .level-buttons {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header {
-                padding: 1rem;
-            }
-            
-            .section {
-                padding: 1rem;
-                border-radius: 15px;
-            }
-            
-            .section-title {
-                font-size: 1.2rem;
-            }
-            
-            .level-btn {
-                padding: 0.8rem;
-                font-size: 0.7rem;
-            }
-        }
-
-        /* Animations */
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
-        }
-
-        .floating {
-            animation: float 6s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        /* Ripple effect for buttons */
-        @keyframes ripple {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
-        }
+/* Enhanced Dark Theme Styles with Rich Colors */
+
+/* General styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+    min-height: 100vh;
+    color: #e8eaed;
+    overflow-x: hidden;
+}
+
+/* Header styles */
+.header {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(15px);
+    padding: 1rem 2rem;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #60a5fa, #a78bfa, #34d399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(96, 165, 250, 0.3);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #cbd5e1;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.8rem;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Container and Section styles */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    min-height: calc(100vh - 100px);
+}
+
+.section {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(148, 163, 184, 0.1);
+    border: 1px solid rgba(71, 85, 105, 0.2);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #1e40af, #7c3aed, #059669);
+    border-radius: 24px 24px 0 0;
+}
+
+.section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.section:hover {
+    transform: translateY(-8px);
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(148, 163, 184, 0.15);
+    border-color: rgba(71, 85, 105, 0.3);
+}
+
+.section-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    background: linear-gradient(45deg, #1e40af, #7c3aed);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.8rem;
+    box-shadow: 0 4px 15px rgba(30, 64, 175, 0.4);
+}
+
+/* Coming Soon/Placeholder styles */
+.coming-soon {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #64748b;
+}
+
+.coming-soon-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.4;
+    filter: drop-shadow(0 0 20px rgba(100, 116, 139, 0.3));
+}
+
+.coming-soon h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: #94a3b8;
+}
+
+.coming-soon p {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+/* CRM Grid and Card styles */
+.crm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.crm-card {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(15, 23, 42, 0.8) 100%);
+    border-radius: 20px;
+    padding: 1.5rem;
+    border: 2px solid rgba(71, 85, 105, 0.3);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.crm-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #1e40af, #7c3aed);
+}
+
+.crm-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.crm-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    border-color: rgba(71, 85, 105, 0.5);
+}
+
+.crm-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.crm-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(45deg, #1e40af, #7c3aed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 6px 20px rgba(30, 64, 175, 0.4);
+}
+
+.crm-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.crm-status {
+    font-size: 0.8rem;
+    color: #34d399;
+    font-weight: 500;
+    text-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+}
+
+.level-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.level-btn {
+    padding: 0.6rem 0.8rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    color: #cbd5e1;
+    border: 1px solid rgba(71, 85, 105, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.level-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(148, 163, 184, 0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.level-btn:hover::before {
+    left: 100%;
+}
+
+/* Enhanced color states for level buttons */
+.level-btn.has-pending {
+    background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%);
+    color: #fca5a5;
+    border-color: rgba(239, 68, 68, 0.4);
+    box-shadow: 
+        0 6px 25px rgba(127, 29, 29, 0.4),
+        inset 0 1px 0 rgba(248, 113, 113, 0.2);
+    animation: pulse 2s infinite;
+}
+
+.level-btn.all-clear {
+    background: linear-gradient(135deg, #14532d 0%, #052e16 100%);
+    color: #86efac;
+    border-color: rgba(34, 197, 94, 0.4);
+    box-shadow: 
+        0 6px 25px rgba(20, 83, 45, 0.4),
+        inset 0 1px 0 rgba(134, 239, 172, 0.2);
+}
+
+.level-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+.placeholder-card {
+    background: linear-gradient(135deg, rgba(51, 65, 85, 0.3) 0%, rgba(30, 41, 59, 0.5) 100%);
+    border: 2px dashed rgba(100, 116, 139, 0.4);
+    color: #94a3b8;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+}
+
+.placeholder-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    opacity: 0.5;
+    filter: drop-shadow(0 0 15px rgba(148, 163, 184, 0.3));
+}
+
+/* Enhanced Summary Card Styles */
+.summary-card {
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+.summary-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 10% 10%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+/* Default styles for summary cards */
+.sales-coordinator-card, .owners-approval-card {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+    border: 2px solid rgba(71, 85, 105, 0.3);
+    color: #e2e8f0;
+}
+
+.sales-coordinator-card::before, .owners-approval-card::before {
+    background: linear-gradient(90deg, #475569, #334155);
+}
+
+/* Enhanced pending states */
+.sales-coordinator-card.has-pending, .owners-approval-card.has-pending {
+    background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%);
+    border: 2px solid rgba(239, 68, 68, 0.5);
+    color: #fca5a5;
+    box-shadow: 
+        0 10px 40px rgba(127, 29, 29, 0.4),
+        inset 0 1px 0 rgba(248, 113, 113, 0.2);
+}
+
+.sales-coordinator-card.has-pending::before, .owners-approval-card.has-pending::before {
+    background: linear-gradient(90deg, #991b1b, #7f1d1d);
+}
+
+.sales-coordinator-card.has-pending .summary-title,
+.sales-coordinator-card.has-pending .summary-header div span,
+.owners-approval-card.has-pending .summary-title,
+.owners-approval-card.has-pending .summary-header div span {
+    color: #fca5a5 !important;
+    text-shadow: 0 0 10px rgba(252, 165, 165, 0.3);
+}
+
+/* Enhanced all-clear states */
+.sales-coordinator-card.all-clear, .owners-approval-card.all-clear {
+    background: linear-gradient(135deg, #14532d 0%, #052e16 100%);
+    border: 2px solid rgba(34, 197, 94, 0.5);
+    color: #86efac;
+    box-shadow: 
+        0 10px 40px rgba(20, 83, 45, 0.4),
+        inset 0 1px 0 rgba(134, 239, 172, 0.2);
+}
+
+.sales-coordinator-card.all-clear::before, .owners-approval-card.all-clear::before {
+    background: linear-gradient(90deg, #166534, #14532d);
+}
+
+.sales-coordinator-card.all-clear .summary-title,
+.sales-coordinator-card.all-clear .summary-header div span,
+.owners-approval-card.all-clear .summary-title,
+.owners-approval-card.all-clear .summary-header div span {
+    color: #86efac !important;
+    text-shadow: 0 0 10px rgba(134, 239, 172, 0.3);
+}
+
+/* Enhanced PO Card Styles */
+.po-card {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+    border: 2px solid rgba(71, 85, 105, 0.3);
+    color: #e2e8f0;
+}
+
+.po-card::before {
+    background: linear-gradient(90deg, #475569, #334155);
+}
+
+.po-card.has-pending {
+    background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%);
+    border: 2px solid rgba(239, 68, 68, 0.5);
+    color: #fca5a5;
+    box-shadow: 
+        0 10px 40px rgba(127, 29, 29, 0.4),
+        inset 0 1px 0 rgba(248, 113, 113, 0.2);
+}
+
+.po-card.has-pending::before {
+    background: linear-gradient(90deg, #991b1b, #7f1d1d);
+}
+
+.po-card.has-pending .summary-title,
+.po-card.has-pending .summary-header div span {
+    color: #fca5a5 !important;
+    text-shadow: 0 0 10px rgba(252, 165, 165, 0.3);
+}
+
+.po-card.all-clear {
+    background: linear-gradient(135deg, #14532d 0%, #052e16 100%);
+    border: 2px solid rgba(34, 197, 94, 0.5);
+    color: #86efac;
+    box-shadow: 
+        0 10px 40px rgba(20, 83, 45, 0.4),
+        inset 0 1px 0 rgba(134, 239, 172, 0.2);
+}
+
+.po-card.all-clear::before {
+    background: linear-gradient(90deg, #166534, #14532d);
+}
+
+.po-card.all-clear .summary-title,
+.po-card.all-clear .summary-header div span {
+    color: #86efac !important;
+    text-shadow: 0 0 10px rgba(134, 239, 172, 0.3);
+}
+
+/* Enhanced Avatar Styles */
+.po-verification-avatar {
+    background: linear-gradient(45deg, #0891b2, #0e7490);
+    box-shadow: 0 6px 20px rgba(8, 145, 178, 0.4);
+}
+
+.po-send-supplier-avatar {
+    background: linear-gradient(45deg, #1d4ed8, #1e40af);
+    box-shadow: 0 6px 20px rgba(29, 78, 216, 0.4);
+}
+
+.po-dispatch-date-avatar {
+    background: linear-gradient(45deg, #7c2d12, #92400e);
+    box-shadow: 0 6px 20px rgba(124, 45, 18, 0.4);
+}
+
+.po-dispatch-followup-avatar {
+    background: linear-gradient(45deg, #991b1b, #7f1d1d);
+    box-shadow: 0 6px 20px rgba(153, 27, 27, 0.4);
+}
+
+.po-lr-details-avatar {
+    background: linear-gradient(45deg, #c2410c, #ea580c);
+    box-shadow: 0 6px 20px rgba(194, 65, 12, 0.4);
+}
+
+.po-acknowledgement-avatar {
+    background: linear-gradient(45deg, #166534, #14532d);
+    box-shadow: 0 6px 20px rgba(22, 101, 52, 0.4);
+}
+
+.summary-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.summary-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.sales-coordinator-avatar {
+    background: linear-gradient(45deg, #166534, #14532d);
+    box-shadow: 0 6px 20px rgba(22, 101, 52, 0.4);
+}
+
+.owners-approval-avatar {
+    background: linear-gradient(45deg, #d97706, #b45309);
+    box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4);
+}
+
+.summary-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #f1f5f9;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Enhanced Link Styles */
+.summary-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    color: #cbd5e1;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 500;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(71, 85, 105, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.po-link {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+
+.summary-link.has-pending {
+    background: linear-gradient(135deg, #7f1d1d 0%, #450a0a 100%);
+    color: #fca5a5;
+    border-color: rgba(239, 68, 68, 0.4);
+    box-shadow: 
+        0 8px 30px rgba(127, 29, 29, 0.4),
+        inset 0 1px 0 rgba(248, 113, 113, 0.2);
+    animation: pulse 2s infinite;
+}
+
+.summary-link.all-clear {
+    background: linear-gradient(135deg, #14532d 0%, #052e16 100%);
+    color: #86efac;
+    border-color: rgba(34, 197, 94, 0.4);
+    box-shadow: 
+        0 8px 30px rgba(20, 83, 45, 0.4),
+        inset 0 1px 0 rgba(134, 239, 172, 0.2);
+    animation: none;
+}
+
+.po-acknowledgement-link {
+    background: linear-gradient(135deg, #14532d 0%, #052e16 100%);
+    color: #86efac;
+    border-color: rgba(34, 197, 94, 0.4);
+    box-shadow: 
+        0 8px 30px rgba(20, 83, 45, 0.4),
+        inset 0 1px 0 rgba(134, 239, 172, 0.2);
+    animation: none;
+}
+
+.summary-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Media Queries for responsiveness */
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1.5rem;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .section {
+        padding: 1.5rem;
+    }
+    
+    .crm-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .level-buttons {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 1rem;
+    }
+    
+    .section {
+        padding: 1rem;
+        border-radius: 20px;
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+    }
+    
+    .level-btn {
+        padding: 0.8rem;
+        font-size: 0.7rem;
+    }
+}
+
+/* Enhanced Animations */
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { 
+        opacity: 1; 
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+    50% { 
+        opacity: 0.8; 
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    }
+    100% { 
+        opacity: 1; 
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+}
+
+.floating {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
     </style>
 </head>
 <body>

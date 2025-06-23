@@ -1,107 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Reminders For Dispatch Departments</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reminders For Dispatch Departments</title>
+    <link href="[https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css](https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css)" rel="stylesheet">
+    <style>
+        /* Custom styles for better aesthetics and readability */
+        body {
+            font-family: 'Inter', sans-serif; /* Using Inter font for a modern look */
+            background-color: #f3f4f6; /* Light gray background for soothing eyes */
+            color: #374151; /* Dark text for good contrast */
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 1rem; /* Rounded corners for a modern feel */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            transition: transform 0.2s ease-in-out; /* Smooth hover transition */
+        }
+        .card:hover {
+            transform: translateY(-0.25rem); /* Subtle lift effect on hover */
+        }
+        .overdue-badge {
+            background-color: #fee2e2; /* Light red background for overdue badge */
+            color: #ef4444; /* Darker red text for overdue */
+        }
+        .active-badge {
+            background-color: #d1fae5; /* Light green background for active badge */
+            color: #10b981; /* Darker green text for active */
+        }
+        #loader {
+            color: #4f46e5; /* Indigo color for the loading indicator */
+        }
+        /* Ensure responsiveness for smaller screens */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem; /* Adjust padding for smaller screens */
+            }
+            .grid-cols-1 {
+                grid-template-columns: 1fr; /* Stack cards on mobile */
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-4">
-  <div id="loader" class="text-center text-xl text-blue-600 font-semibold">Loading orders...</div>
-  <div id="ordersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 hidden"></div>
+<body class="bg-gray-100 min-h-screen p-4 flex flex-col items-center">
+    <div class="w-full max-w-7xl">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Dispatch Department Reminders</h1>
+        <div id="loader" class="text-center text-xl text-indigo-600 font-semibold mb-4">Loading orders...</div>
+        <div id="ordersContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 hidden"></div>
+    </div>
 
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxMxIzOQmHv3LPTh6ca6i5uuguyH615cnjA5emEGNT0rmWpJlnrcg-KWNVP1DORkkcX/exec";
-    let globalOrders = [];
+    <script>
+        // API endpoint for fetching order data. This URL is external and should remain unchanged.
+        const API_URL = "[https://script.google.com/macros/s/AKfycbxMxIzOQmHv3LPTh6ca6i5uuguyH615cnjA5emEGNT0rmWpJlnrcg-KWNVP1DORkkcX/exec](https://script.google.com/macros/s/AKfycbxMxIzOQmHv3LPTh6ca6i5uuguyH615cnjA5emEGNT0rmWpJlnrcg-KWNVP1DORkkcX/exec)";
+        // Interval for auto-refreshing the data (in milliseconds). Set to 5 seconds.
+        const REFRESH_INTERVAL_MS = 5000; 
+        
+        let globalOrders = []; // Stores the fetched order data
+        let countdownGlobalInterval; // Holds the ID for the single global countdown interval
 
-    async function fetchOrders() {
-      try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const crmName = urlParams.get('crm');
-        if (!crmName) {
-            throw new Error('CRM name is missing in URL');
+        /**
+         * Displays the loading indicator and hides the orders container.
+         * Also clears any previously rendered orders.
+         */
+        function showLoader() {
+            document.getElementById("loader").classList.remove("hidden");
+            document.getElementById("ordersContainer").classList.add("hidden");
+            document.getElementById("ordersContainer").innerHTML = ""; // Clear previous content
         }
-        // Append crmName to the API URL
-        const response = await fetch(`${API_URL}?crm=${encodeURIComponent(crmName)}`);
-        const result = await response.json();
-        if (result.status === "success") {
-          document.getElementById("loader").classList.add("hidden");
-          document.getElementById("ordersContainer").classList.remove("hidden");
-          globalOrders = result.data;
-          renderOrders(globalOrders);
-        } else {
-          throw new Error("Invalid response");
+
+        /**
+         * Hides the loading indicator and displays the orders container.
+         */
+        function hideLoader() {
+            document.getElementById("loader").classList.add("hidden");
+            document.getElementById("ordersContainer").classList.remove("hidden");
         }
-      } catch (err) {
-        document.getElementById("loader").innerText = "Failed to load orders.";
-        console.error(err);
-      }
-    }
 
-    function getDeadline(originalTimestampStr) {
-      const original = new Date(originalTimestampStr);
-      let deadline = new Date(original);
-      const day = original.getUTCDay(); // 1 = Monday
+        /**
+         * Calculates the deadline timestamp for a given order based on its original timestamp.
+         * The deadline is 6:00 PM (18:00:00) on the day before the original timestamp,
+         * or two days before if the original timestamp is a Monday.
+         * @param {string} originalTimestampStr - The original dispatch timestamp string.
+         * @returns {Date} - The calculated deadline Date object.
+         */
+        function getDeadline(originalTimestampStr) {
+            const original = new Date(originalTimestampStr);
+            let deadline = new Date(original);
+            const day = original.getUTCDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
 
-      // If timestamp is Monday (1), subtract 2 days
-      if (day === 1) {
-        deadline.setDate(deadline.getDate() - 2);
-      } else {
-        deadline.setDate(deadline.getDate() - 1);
-      }
+            // If the original timestamp is Monday (1), subtract 2 days to get Saturday
+            // Otherwise, subtract 1 day to get the previous day
+            if (day === 1) { // Monday
+                deadline.setDate(deadline.getDate() - 2);
+            } else { // Tuesday to Sunday
+                deadline.setDate(deadline.getDate() - 1);
+            }
 
-      deadline.setHours(18, 0, 0, 0); // 6:00 PM
-      return deadline;
-    }
-
-    function renderOrders(orders) {
-      const container = document.getElementById("ordersContainer");
-      container.innerHTML = "";
-
-      orders.forEach((order, index) => {
-        const deadline = getDeadline(order.timestamp);
-
-        const card = document.createElement("div");
-        card.className = "bg-white p-6 rounded-2xl shadow-md relative transition hover:scale-[1.02]";
-
-        const overdue = new Date() > deadline;
-        const deadlineLabel = overdue ? "Overdue" : "Active";
-
-        card.innerHTML = `
-          <div class="absolute top-2 right-2 text-sm font-semibold px-3 py-1 rounded-full ${overdue ? 'bg-red-200 text-red-800' : 'bg-green-200 text-green-800'}">
-            ${deadlineLabel}
-          </div>
-          <div class="text-xl font-bold mb-2">${order.dealerName}</div>
-          <p><strong>Marketing:</strong> ${order.marketingPersonName}</p>
-          <p><strong>Location:</strong> ${order.location}</p>
-          <p><strong>CRM:</strong> ${order.crmName}</p>
-          <p><strong>Dispatch Date & Time:</strong> ${new Date(order.timestamp).toLocaleString()}</p>
-          <p><strong>Deadline:</strong> ${deadline.toLocaleString()}</p>
-          <p><strong>Time Left:</strong> <span id="countdown-${index}" class="font-mono text-blue-700"></span></p>
-        `;
-        container.appendChild(card);
-        startCountdown(deadline, index);
-      });
-    }
-
-    function startCountdown(deadline, index) {
-      const el = document.getElementById(`countdown-${index}`);
-      function update() {
-        const now = new Date();
-        const diff = deadline - now;
-        if (diff <= 0) {
-          el.innerText = "00:00:00";
-          el.classList.add("text-red-500");
-          return;
+            deadline.setHours(18, 0, 0, 0); // Set deadline time to 6:00 PM (18:00:00)
+            return deadline;
         }
-        const h = String(Math.floor(diff / (1000 * 60 * 60))).padStart(2, "0");
-        const m = String(Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, "0");
-        const s = String(Math.floor((diff % (1000 * 60)) / 1000)).padStart(2, "0");
-        el.innerText = `${h}:${m}:${s}`;
-      }
-      update();
-      setInterval(update, 1000);
-    }
-    fetchOrders();
-  </script>
+
+        /**
+         * Updates the countdown timer for all currently displayed order cards.
+         * This function is called by a single global interval to optimize performance.
+         */
+        function updateAllCountdowns() {
+            // Select all elements whose IDs start with "countdown-"
+            const countdownElements = document.querySelectorAll('[id^="countdown-"]');
+            
+            countdownElements.forEach(el => {
+                // Retrieve the deadline from the data-deadline attribute
+                const deadline = new Date(el.dataset.deadline); 
+                const now = new Date();
+                const diff = deadline - now; // Difference in milliseconds
+
+                if (diff <= 0) {
+                    el.innerText = "00:00:00"; // Display all zeros if deadline passed
+                    el.classList.add("text-red-500"); // Highlight overdue in red
+                    return;
+                }
+
+                // Calculate hours, minutes, and seconds from the difference
+                const totalSeconds = Math.floor(diff / 1000);
+                const h = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+                const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, "0");
+                const s = String(totalSeconds % 60).padStart(2, "0");
+                
+                el.innerText = `${h}:${m}:${s}`; // Update the displayed countdown
+            });
+        }
+
+        /**
+         * Renders the fetched orders into the DOM.
+         * Clears existing content and creates new cards for each order.
+         * @param {Array<Object>} orders - An array of order objects to render.
+         */
+        function renderOrders(orders) {
+            const container = document.getElementById("ordersContainer");
+            container.innerHTML = ""; // Clear existing orders before rendering new ones
+
+            if (orders.length === 0) {
+                // Display a message if no orders are found
+                container.innerHTML = '<p class="text-center text-gray-600 col-span-full">No pending orders found.</p>';
+                return;
+            }
+
+            orders.forEach((order, index) => {
+                const deadline = getDeadline(order.timestamp); // Calculate deadline for each order
+                const overdue = new Date() > deadline; // Check if the order is overdue
+                const deadlineLabel = overdue ? "Overdue" : "Active"; // Determine badge label
+
+                const card = document.createElement("div");
+                // Apply Tailwind CSS classes for styling and responsiveness
+                card.className = `card bg-white p-6 rounded-2xl shadow-md relative transition-all duration-200 ease-in-out hover:scale-[1.02] ${overdue ? 'border-l-4 border-red-500' : 'border-l-4 border-green-500'}`;
+                
+                // Construct the inner HTML for the order card
+                // Store deadline in a data attribute for easy retrieval by updateAllCountdowns
+                card.innerHTML = `
+                    <div class="absolute top-4 right-4 text-sm font-semibold px-3 py-1 rounded-full ${overdue ? 'overdue-badge' : 'active-badge'}">
+                        ${deadlineLabel}
+                    </div>
+                    <div class="text-xl font-bold mb-2 text-gray-800">${order.dealerName}</div>
+                    <p class="text-gray-700"><strong>Marketing:</strong> ${order.marketingPersonName}</p>
+                    <p class="text-gray-700"><strong>Location:</strong> ${order.location}</p>
+                    <p class="text-gray-700"><strong>CRM:</strong> ${order.crmName}</p>
+                    <p class="text-gray-700"><strong>Dispatch Date & Time:</strong> ${new Date(order.timestamp).toLocaleString()}</p>
+                    <p class="text-gray-700"><strong>Deadline:</strong> ${deadline.toLocaleString()}</p>
+                    <p class="text-gray-700"><strong>Time Left:</strong> <span id="countdown-${index}" class="font-mono text-indigo-700" data-deadline="${deadline.toISOString()}"></span></p>
+                `;
+                container.appendChild(card); // Add the new card to the container
+            });
+            // Immediately update countdowns after new cards are rendered
+            updateAllCountdowns();
+        }
+
+        /**
+         * Fetches order data from the API and then renders it.
+         * Handles loading states and potential errors during the fetch.
+         */
+        async function fetchOrdersAndRender() {
+            showLoader(); // Show loader before starting the fetch
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const crmName = urlParams.get('crm'); // Get CRM name from URL parameter
+                if (!crmName) {
+                    document.getElementById("loader").innerText = "Error: CRM name is missing in URL.";
+                    return; // Exit if CRM name is not provided
+                }
+                
+                // Fetch data from the API, including the CRM name
+                const response = await fetch(`${API_URL}?crm=${encodeURIComponent(crmName)}`);
+                
+                if (!response.ok) {
+                    // Throw an error if the HTTP response status is not OK
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const result = await response.json(); // Parse the JSON response
+
+                if (result.status === "success" && result.data) {
+                    globalOrders = result.data; // Store fetched data
+                    renderOrders(globalOrders); // Render the new data
+                } else {
+                    // Display specific error message if API response indicates failure
+                    document.getElementById("loader").innerText = "Failed to load orders: " + (result.message || "Unknown error.");
+                    console.error("API response error:", result);
+                }
+            } catch (err) {
+                // Catch any network or parsing errors
+                document.getElementById("loader").innerText = "Failed to load orders. Please check your network connection.";
+                console.error("Fetch error:", err);
+            } finally {
+                hideLoader(); // Hide loader regardless of success or failure
+            }
+        }
+
+        // Event listener for when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchOrdersAndRender(); // Perform initial data fetch and render
+            
+            // Start the single global interval for updating all countdowns every second
+            countdownGlobalInterval = setInterval(updateAllCountdowns, 1000);
+            
+            // Set up auto-refresh for data every 5 seconds as requested
+            setInterval(fetchOrdersAndRender, REFRESH_INTERVAL_MS);
+        });
+    </script>
 </body>
 </html>

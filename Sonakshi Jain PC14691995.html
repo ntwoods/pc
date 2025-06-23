@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Process Coordinator Dashboard</title>
     <style>
-/* Updated Light Theme Styles with Elegant Colors */
+/* Updated Dark Theme Styles with Elegant Colors (Black for All Clear, Dark Red for Pending) */
 
 /* General styles */
 * {
@@ -16,22 +16,22 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #f0f2f5 0%, #e0e4e8 100%); /* Lighter, soft background */
+    background: linear-gradient(135deg, #1b2631 0%, #212f3d 100%); /* Even darker, soothing background */
     min-height: 100vh;
-    color: #333; /* Darker text for readability */
+    color: #ecf0f1; /* Light text for readability on dark background */
     overflow-x: hidden;
 }
 
 /* Header styles */
 .header {
-    background: rgba(255, 255, 255, 0.9); /* Lighter header with some transparency */
+    background: rgba(28, 40, 51, 0.95); /* Darker header with some transparency */
     backdrop-filter: blur(10px);
     padding: 1rem 2rem;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
     position: sticky;
     top: 0;
     z-index: 100;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .header-content {
@@ -45,11 +45,11 @@ body {
 .logo {
     font-size: 1.5rem;
     font-weight: 700;
-    background: linear-gradient(45deg, #007bff, #6f42c1, #28a745); /* Vibrant but professional gradient */
+    background: linear-gradient(45deg, #3498db, #8e44ad, #2ecc71); /* Professional gradient */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    text-shadow: 0 0 15px rgba(0, 123, 255, 0.2);
+    text-shadow: 0 0 15px rgba(52, 152, 219, 0.2);
 }
 
 .user-info {
@@ -57,21 +57,21 @@ body {
     align-items: center;
     gap: 0.5rem;
     font-size: 0.9rem;
-    color: #555; /* Readable grey */
+    color: #bdc3c7; /* Readable light grey */
 }
 
 .user-avatar {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: linear-gradient(45deg, #007bff, #6f42c1); /* Consistent with logo colors */
+    background: linear-gradient(45deg, #3498db, #8e44ad); /* Consistent with logo colors */
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: 600;
     font-size: 0.8rem;
-    box-shadow: 0 0 15px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
 }
 
 /* Container and Section styles */
@@ -86,14 +86,14 @@ body {
 }
 
 .section {
-    background: rgba(255, 255, 255, 0.95); /* Clean white background for sections */
+    background: rgba(33, 47, 61, 0.95); /* Dark background for sections */
     backdrop-filter: blur(15px);
     border-radius: 20px;
     padding: 2rem;
     box-shadow: 
-        0 8px 30px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+        0 8px 30px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease-in-out;
     position: relative;
     overflow: hidden;
@@ -106,7 +106,7 @@ body {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, #007bff, #6f42c1, #28a745); /* Subtle, professional gradient */
+    background: linear-gradient(90deg, #3498db, #8e44ad, #2ecc71); /* Subtle, professional gradient */
     border-radius: 20px 20px 0 0;
 }
 
@@ -117,60 +117,60 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(0, 123, 255, 0.03) 0%, transparent 50%);
+    background: radial-gradient(circle at 50% 0%, rgba(52, 152, 219, 0.03) 0%, transparent 50%);
     pointer-events: none;
 }
 
 .section:hover {
     transform: translateY(-5px);
     box-shadow: 
-        0 15px 45px rgba(0, 0, 0, 0.15),
-        inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    border-color: rgba(0, 0, 0, 0.12);
+        0 15px 45px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 .section-title {
     font-size: 1.4rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
-    color: #333; /* Darker text for titles */
+    color: #ecf0f1; /* Light text for titles */
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .icon {
     width: 24px;
     height: 24px;
-    background: linear-gradient(45deg, #007bff, #6f42c1); /* Matches header/avatar */
+    background: linear-gradient(45deg, #3498db, #8e44ad); /* Matches header/avatar */
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-size: 0.8rem;
-    box-shadow: 0 2px 10px rgba(0, 123, 255, 0.2);
+    box-shadow: 0 2px 10px rgba(52, 152, 219, 0.2);
 }
 
 /* Coming Soon/Placeholder styles */
 .coming-soon {
     text-align: center;
     padding: 4rem 2rem;
-    color: #888;
+    color: #7f8c8d; /* Muted grey for placeholders */
 }
 
 .coming-soon-icon {
     font-size: 4rem;
     margin-bottom: 1rem;
     opacity: 0.3;
-    filter: drop-shadow(0 0 15px rgba(136, 136, 136, 0.2));
+    filter: drop-shadow(0 0 15px rgba(127, 140, 141, 0.2));
 }
 
 .coming-soon h3 {
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
-    color: #666;
+    color: #95a5a6;
 }
 
 .coming-soon p {
@@ -187,14 +187,14 @@ body {
 }
 
 .crm-card {
-    background: #ffffff; /* Clean white for CRM cards */
+    background: #283747; /* Darker background for CRM cards */
     border-radius: 16px;
     padding: 1.5rem;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease-in-out;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
 }
 
 .crm-card::before {
@@ -204,7 +204,7 @@ body {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, #007bff, #6f42c1); /* Subtle blue/purple top border */
+    background: linear-gradient(90deg, #3498db, #8e44ad); /* Subtle blue/purple top border */
 }
 
 .crm-card::after {
@@ -214,14 +214,14 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 20% 20%, rgba(0, 123, 255, 0.02) 0%, transparent 50%);
+    background: radial-gradient(circle at 20% 20%, rgba(52, 152, 219, 0.02) 0%, transparent 50%);
     pointer-events: none;
 }
 
 .crm-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
-    border-color: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.15);
 }
 
 .crm-header {
@@ -235,26 +235,26 @@ body {
     width: 40px;
     height: 40px;
     border-radius: 12px;
-    background: linear-gradient(45deg, #007bff, #6f42c1);
+    background: linear-gradient(45deg, #3498db, #8e44ad);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: 600;
     font-size: 0.9rem;
-    box-shadow: 0 3px 10px rgba(0, 123, 255, 0.2);
+    box-shadow: 0 3px 10px rgba(52, 152, 219, 0.2);
 }
 
 .crm-name {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #333;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    color: #ecf0f1;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
 }
 
 .crm-status {
     font-size: 0.8rem;
-    color: #28a745; /* Green for active */
+    color: #2ecc71; /* Green for active */
     font-weight: 500;
 }
 
@@ -281,10 +281,10 @@ body {
     gap: 0.3rem;
     position: relative;
     overflow: hidden;
-    background: #f8f9fa; /* Light grey for default buttons */
-    color: #555;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    background: #394d61; /* Dark grey for default buttons */
+    color: #ecf0f1;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .level-btn::before {
@@ -294,7 +294,7 @@ body {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
     transition: left 0.4s ease;
 }
 
@@ -302,35 +302,35 @@ body {
     left: 100%;
 }
 
-/* Enhanced color states for level buttons */
+/* Red for Pending, Black for All Clear */
 .level-btn.has-pending {
-    background: #ffe0b2; /* Light orange for pending */
-    color: #d66d00; /* Darker orange text */
-    border-color: #ffc107; /* Orange border */
+    background: #a00000; /* Darker red for pending buttons */
+    color: white;
+    border-color: #8b0000;
     box-shadow: 
-        0 4px 15px rgba(255, 193, 7, 0.2),
-        inset 0 1px 0 rgba(255, 230, 180, 0.5);
-    animation: pulse-orange 2s infinite;
+        0 4px 15px rgba(139, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    animation: pulse-red 2s infinite;
 }
 
 .level-btn.all-clear {
-    background: #e6ffe6; /* Light green for all clear */
-    color: #1a7e3d; /* Darker green text */
-    border-color: #28a745; /* Green border */
+    background: #000000; /* Black for all clear buttons */
+    color: #cccccc; /* Slightly lighter grey for text on black */
+    border-color: #2c3e50; /* Dark border to match theme */
     box-shadow: 
-        0 4px 15px rgba(40, 167, 69, 0.2),
-        inset 0 1px 0 rgba(200, 255, 200, 0.5);
+        0 4px 15px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .level-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 .placeholder-card {
-    background: #f0f0f0; /* Slightly darker grey for placeholder */
-    border: 2px dashed #bbb;
-    color: #888;
+    background: #394d61; /* Slightly darker grey for placeholder */
+    border: 2px dashed #7f8c8d;
+    color: #bdc3c7;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -344,7 +344,7 @@ body {
     font-size: 2rem;
     margin-bottom: 0.5rem;
     opacity: 0.4;
-    filter: drop-shadow(0 0 10px rgba(187, 187, 187, 0.2));
+    filter: drop-shadow(0 0 10px rgba(127, 140, 141, 0.2));
 }
 
 /* Enhanced Summary Card Styles */
@@ -355,7 +355,7 @@ body {
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease-in-out;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
 }
 
 .summary-card::before {
@@ -374,33 +374,33 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 10% 10%, rgba(0, 123, 255, 0.02) 0%, transparent 50%);
+    background: radial-gradient(circle at 10% 10%, rgba(52, 152, 219, 0.02) 0%, transparent 50%);
     pointer-events: none;
 }
 
 /* Default styles for summary cards */
 .sales-coordinator-card, .owners-approval-card, .sales-dispatch-confirmation-card, .po-card {
-    background: #ffffff; /* Clean white background */
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    color: #333;
+    background: #283747; /* Dark background */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ecf0f1;
 }
 
 .sales-coordinator-card::before, .owners-approval-card::before, .sales-dispatch-confirmation-card::before, .po-card::before {
-    background: linear-gradient(90deg, #add8e6, #87ceeb); /* Light blue gradient */
+    background: linear-gradient(90deg, #3498db, #8e44ad); /* Darker blue gradient */
 }
 
-/* Enhanced pending states for summary cards */
+/* Red for Pending for summary cards */
 .sales-coordinator-card.has-pending, .owners-approval-card.has-pending, .sales-dispatch-confirmation-card.has-pending, .po-card.has-pending {
-    background: #fff3e0; /* Light orange background */
-    border: 1px solid #ff9800; /* Orange border */
-    color: #e65100; /* Dark orange text */
+    background: #8b0000; /* Very dark red background */
+    border: 1px solid #a00000; /* Darker red border */
+    color: white; /* White text */
     box-shadow: 
-        0 8px 30px rgba(255, 152, 0, 0.25),
-        inset 0 1px 0 rgba(255, 230, 180, 0.5);
+        0 8px 30px rgba(139, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .sales-coordinator-card.has-pending::before, .owners-approval-card.has-pending::before, .sales-dispatch-confirmation-card.has-pending::before, .po-card.has-pending::before {
-    background: linear-gradient(90deg, #ffc107, #ff9800); /* Orange gradient */
+    background: linear-gradient(90deg, #a00000, #8b0000); /* Dark red gradient */
 }
 
 .sales-coordinator-card.has-pending .summary-title,
@@ -411,22 +411,22 @@ body {
 .sales-dispatch-confirmation-card.has-pending .summary-header div span,
 .po-card.has-pending .summary-title,
 .po-card.has-pending .summary-header div span {
-    color: #e65100 !important; /* Dark orange text */
-    text-shadow: 0 0 5px rgba(230, 81, 0, 0.2);
+    color: white !important; /* White text */
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
 }
 
-/* Enhanced all-clear states for summary cards */
+/* Black for All Clear for summary cards */
 .sales-coordinator-card.all-clear, .owners-approval-card.all-clear, .sales-dispatch-confirmation-card.all-clear, .po-card.all-clear {
-    background: #e8f5e9; /* Light green background */
-    border: 1px solid #4caf50; /* Green border */
-    color: #2e7d32; /* Dark green text */
+    background: #1a1a1a; /* Very dark black background */
+    border: 1px solid #2c3e50; /* Dark grey border */
+    color: #cccccc; /* Lighter grey text */
     box-shadow: 
-        0 8px 30px rgba(76, 175, 80, 0.25),
-        inset 0 1px 0 rgba(200, 255, 200, 0.5);
+        0 8px 30px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .sales-coordinator-card.all-clear::before, .owners-approval-card.all-clear::before, .sales-dispatch-confirmation-card.all-clear::before, .po-card.all-clear::before {
-    background: linear-gradient(90deg, #8bc34a, #4caf50); /* Green gradient */
+    background: linear-gradient(90deg, #000000, #1a1a1a); /* Black gradient */
 }
 
 .sales-coordinator-card.all-clear .summary-title,
@@ -437,8 +437,8 @@ body {
 .sales-dispatch-confirmation-card.all-clear .summary-header div span,
 .po-card.all-clear .summary-title,
 .po-card.all-clear .summary-header div span {
-    color: #2e7d32 !important; /* Dark green text */
-    text-shadow: 0 0 5px rgba(46, 125, 50, 0.2);
+    color: #cccccc !important; /* Lighter grey text */
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
 /* Enhanced Avatar Styles - Consistent gradient for all avatars */
@@ -451,8 +451,8 @@ body {
 .sales-coordinator-avatar,
 .owners-approval-avatar,
 .sales-dispatch-confirmation-avatar {
-    background: linear-gradient(45deg, #007bff, #6f42c1); /* Consistent blue/purple gradient */
-    box-shadow: 0 3px 10px rgba(0, 123, 255, 0.2);
+    background: linear-gradient(45deg, #3498db, #8e44ad); /* Consistent blue/purple gradient */
+    box-shadow: 0 3px 10px rgba(52, 152, 219, 0.2);
 }
 
 .summary-header {
@@ -477,8 +477,8 @@ body {
 .summary-title {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #333; /* Darker text for titles */
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    color: #ecf0f1; /* Light text for titles */
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
 }
 
 /* Enhanced Link Styles */
@@ -487,54 +487,57 @@ body {
     align-items: center;
     gap: 0.5rem;
     padding: 0.7rem 1.2rem; /* Slightly smaller padding */
-    color: #555;
+    color: #ecf0f1;
     text-decoration: none;
     border-radius: 10px; /* Slightly smaller border-radius */
     font-weight: 500;
     transition: all 0.3s ease-in-out;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     overflow: hidden;
 }
 
 .po-link, .sales-link {
-    background: #f0f2f5; /* Light grey for default links */
+    background: #394d61; /* Dark grey for default links */
 }
 
+/* Red for Pending for links */
 .summary-link.has-pending {
-    background: #ffecb3; /* Lightest orange for pending links */
-    color: #e65100; /* Dark orange text */
-    border-color: #ffb300; /* Orange border */
+    background: #a00000; /* Darker red for pending links */
+    color: white;
+    border-color: #8b0000;
     box-shadow: 
-        0 6px 20px rgba(255, 179, 0, 0.2),
-        inset 0 1px 0 rgba(255, 230, 180, 0.5);
-    animation: pulse-orange 2s infinite;
+        0 6px 20px rgba(139, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    animation: pulse-red 2s infinite;
 }
 
+/* Black for All Clear for links */
 .summary-link.all-clear {
-    background: #e8f5e9; /* Lightest green for all clear links */
-    color: #2e7d32; /* Dark green text */
-    border-color: #66bb6a; /* Green border */
+    background: #000000; /* Black for all clear links */
+    color: #cccccc; /* Lighter grey text */
+    border-color: #2c3e50; /* Dark border */
     box-shadow: 
-        0 6px 20px rgba(102, 187, 106, 0.2),
-        inset 0 1px 0 rgba(200, 255, 200, 0.5);
+        0 6px 20px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
     animation: none;
 }
 
 .po-acknowledgement-link {
-    background: #e8f5e9; /* Consistent light green for all clear */
-    color: #2e7d32;
-    border-color: #66bb6a;
+    background: #000000; /* Consistent black for all clear */
+    color: #cccccc;
+    border-color: #2c3e50;
     box-shadow: 
-        0 6px 20px rgba(102, 187, 106, 0.2),
-        inset 0 1px 0 rgba(200, 255, 200, 0.5);
+        0 6px 20px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
     animation: none;
 }
 
+
 .summary-link:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
 
 /* Media Queries for responsiveness */
@@ -584,15 +587,15 @@ body {
 }
 
 /* Enhanced Animations */
-@keyframes pulse-orange {
+@keyframes pulse-red {
     0% { 
-        box-shadow: 0 0 0 0 rgba(255, 165, 0, 0.4);
+        box-shadow: 0 0 0 0 rgba(139, 0, 0, 0.5);
     }
     50% { 
-        box-shadow: 0 0 0 10px rgba(255, 165, 0, 0);
+        box-shadow: 0 0 0 10px rgba(139, 0, 0, 0);
     }
     100% { 
-        box-shadow: 0 0 0 0 rgba(255, 165, 0, 0);
+        box-shadow: 0 0 0 0 rgba(139, 0, 0, 0);
     }
 }
 
@@ -751,7 +754,7 @@ body {
                     <span>🚚</span> View Dispatch Confirmation
                 </a>
             </div>
-            <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: #555; font-weight: 600;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 1rem; color: #bdc3c7; font-weight: 600;">
                 👥 Monitor Individual CRM's Working
             </h3>
             
@@ -861,16 +864,16 @@ body {
         </section>
     </div>
 
-    <footer style="background: rgba(240, 242, 245, 0.9); backdrop-filter: blur(8px); border-top: 1px solid rgba(0, 0, 0, 0.05); padding: 1.5rem 2rem; margin-top: 2rem;">
+    <footer style="background: rgba(28, 40, 51, 0.9); backdrop-filter: blur(8px); border-top: 1px solid rgba(255, 255, 255, 0.05); padding: 1.5rem 2rem; margin-top: 2rem;">
         <div style="max-width: 1400px; margin: 0 auto; text-align: center;">
             <div style="display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
-                <div style="font-size: 0.9rem; color: #555; font-weight: 500;">
-                    Designed & Developed by <span style="color: #007bff; font-weight: 600;">Kuldeep Sharma</span>
+                <div style="font-size: 0.9rem; color: #bdc3c7; font-weight: 500;">
+                    Designed & Developed by <span style="color: #3498db; font-weight: 600;">Kuldeep Sharma</span>
                 </div>
-                <div style="font-size: 0.8rem; color: #888; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
+                <div style="font-size: 0.8rem; color: #7f8c8d; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; justify-content: center;">
                     <span>© 2025 All Rights Reserved</span>
-                    <span style="color: #bbb;">•</span>
-                    <span style="font-weight: 600; color: #555;">N.T. Woods Pvt. Ltd.</span>
+                    <span style="color: #4a617c;">•</span>
+                    <span style="font-weight: 600; color: #bdc3c7;">N.T. Woods Pvt. Ltd.</span>
                 </div>
             </div>
         </div>
@@ -948,7 +951,7 @@ body {
                     if (count > 0) {
                         linkElement.classList.add('has-pending');
                         linkElement.classList.remove('all-clear');
-                        linkElement.style.animation = 'pulse-orange 2s infinite';
+                        linkElement.style.animation = 'pulse-red 2s infinite';
                     } else {
                         linkElement.classList.remove('has-pending');
                         linkElement.classList.add('all-clear');
@@ -971,34 +974,34 @@ body {
                 console.error(`Error fetching data for ${elementId}:`, error);
                 if (element) {
                     element.innerText = 'Error';
-                    element.style.color = '#dc3545'; // Keep error text red (bootstrap danger red)
+                    element.style.color = '#e74c3c'; // Error text red
                 }
                 if (linkElement) {
                     linkElement.classList.remove('has-pending');
                     linkElement.classList.remove('all-clear');
                     linkElement.style.animation = 'none';
                     // Revert to neutral background on error for links
-                    linkElement.style.background = '#f0f2f5';
-                    linkElement.style.color = '#555'; // Ensure text is visible on neutral background
-                    linkElement.style.borderColor = 'rgba(0, 0, 0, 0.1)';
-                    linkElement.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.05)';
+                    linkElement.style.background = '#394d61'; /* Dark grey */
+                    linkElement.style.color = '#ecf0f1'; // Ensure text is visible on neutral background
+                    linkElement.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    linkElement.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.3)';
                 }
                 if (cardElement) {
                     cardElement.classList.remove('has-pending');
                     cardElement.classList.remove('all-clear');
                     // Revert to default neutral background for cards on error
-                    cardElement.style.background = '#ffffff';
-                    cardElement.style.borderColor = 'rgba(0, 0, 0, 0.1)';
-                    cardElement.style.color = '#333'; // Default text color for card
+                    cardElement.style.background = '#283747';
+                    cardElement.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    cardElement.style.color = '#ecf0f1'; // Default text color for card
                     if (cardElement.querySelector('.summary-title')) {
-                        cardElement.querySelector('.summary-title').style.color = '#333'; // Default title color
+                        cardElement.querySelector('.summary-title').style.color = '#ecf0f1'; // Default title color
                     }
                     if (cardElement.querySelector('.summary-header div span')) {
-                        cardElement.querySelector('.summary-header div span').style.color = '#dc3545'; // Error text color for count
+                        cardElement.querySelector('.summary-header div span').style.color = '#e74c3c'; // Error text color for count
                     }
                     // Reset before pseudo-element background if applicable
                     if (cardElement.classList.contains('po-card') || cardElement.classList.contains('sales-coordinator-card') || cardElement.classList.contains('owners-approval-card') || cardElement.classList.contains('sales-dispatch-confirmation-card')) {
-                         cardElement.style.setProperty('--before-background', 'linear-gradient(90deg, #add8e6, #87ceeb)');
+                         cardElement.style.setProperty('--before-background', 'linear-gradient(90deg, #3498db, #8e44ad)');
                     }
                 }
             }
@@ -1046,24 +1049,24 @@ body {
                  poAcknowledgementLink.classList.remove('has-pending'); // Ensure no pending style
                  poAcknowledgementLink.classList.add('all-clear'); // Consider it 'all clear' as it's monitor directly
                  poAcknowledgementLink.style.animation = 'none'; // No pulse
-                 poAcknowledgementLink.style.background = '#e8f5e9'; // Set to light green for all clear
-                 poAcknowledgementLink.style.color = '#2e7d32'; // Dark green text
-                 poAcknowledgementLink.style.borderColor = '#66bb6a'; // Green border
-                 poAcknowledgementLink.style.boxShadow = '0 6px 20px rgba(102, 187, 106, 0.2), inset 0 1px 0 rgba(200, 255, 200, 0.5)';
+                 poAcknowledgementLink.style.background = '#000000'; // Set to black for all clear
+                 poAcknowledgementLink.style.color = '#cccccc'; // Lighter grey text
+                 poAcknowledgementLink.style.borderColor = '#2c3e50'; // Dark border
+                 poAcknowledgementLink.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05)';
             }
             if (poAcknowledgementCard) {
                 poAcknowledgementCard.classList.remove('has-pending');
                 poAcknowledgementCard.classList.add('all-clear');
-                poAcknowledgementCard.style.background = '#e8f5e9'; /* Light green */
-                poAcknowledgementCard.style.border = '1px solid #4caf50';
-                poAcknowledgementCard.style.color = '#2e7d32'; // Make card text dark green
+                poAcknowledgementCard.style.background = '#1a1a1a'; /* Darker black */
+                poAcknowledgementCard.style.border = '1px solid #2c3e50';
+                poAcknowledgementCard.style.color = '#cccccc'; // Make card text lighter grey
                 if (poAcknowledgementCard.querySelector('.summary-title')) {
-                    poAcknowledgementCard.querySelector('.summary-title').style.color = '#2e7d32'; // Make title dark green
+                    poAcknowledgementCard.querySelector('.summary-title').style.color = '#cccccc'; // Make title lighter grey
                 }
                 if (poAcknowledgementCard.querySelector('.summary-header div span')) {
-                    poAcknowledgementCard.querySelector('.summary-header div span').style.color = '#2e7d32'; // Make 'Monitor Directly' text dark green
+                    poAcknowledgementCard.querySelector('.summary-header div span').style.color = '#cccccc'; // Make 'Monitor Directly' text lighter grey
                 }
-                poAcknowledgementCard.style.setProperty('--before-background', 'linear-gradient(90deg, #8bc34a, #4caf50)'); /* Green gradient */
+                poAcknowledgementCard.style.setProperty('--before-background', 'linear-gradient(90deg, #000000, #1a1a1a)'); /* Black gradient */
             }
         }
 
@@ -1093,7 +1096,7 @@ body {
                     const ripple = document.createElement('span');
                     ripple.style.position = 'absolute';
                     ripple.style.borderRadius = '50%';
-                    ripple.style.background = 'rgba(0,0,0,0.1)'; /* Darker ripple for light theme */
+                    ripple.style.background = 'rgba(255,255,255,0.1)'; /* Lighter ripple for dark theme */
                     ripple.style.transform = 'scale(0)';
                     ripple.style.animation = 'ripple 0.6s linear';
                     

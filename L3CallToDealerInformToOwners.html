@@ -6,6 +6,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <title>Sales Orders Dashboard</title>
     <style>
+        /* Your existing CSS remains here, as it's well-structured for presentation */
         * {
             margin: 0;
             padding: 0;
@@ -187,194 +188,244 @@
 <script>
     let orders = [];
     let countdownInterval;
-
-    // Your API endpoint URL
     const API_URL = 'https://script.google.com/macros/s/AKfycbwuVRnAkiEKnTNy6yPBiPxA6BHIim4OlHjx1B3duF0Qt81itDZzgESH_g6pGWDkKhTs/exec';
 
-    // Function to fetch orders from the API
+    /**
+     * Fetches orders from the API and updates the display.
+     * Includes error handling and loading indicators.
+     */
     async function fetchOrders() {
-        try {
-            document.getElementById('content').innerHTML = '<div class="loading">Loading orders...</div>';
+        const contentDiv = document.getElementById('content');
+        // Display loading message immediately
+        contentDiv.innerHTML = '<div class="loading">Loading orders...</div>';
 
+        try {
             const urlParams = new URLSearchParams(window.location.search);
             const crmName = urlParams.get('crm');
 
             if (!crmName) {
-                throw new Error('CRM name is missing in URL');
+                throw new Error('CRM name is missing in URL parameter. Please add "?crm=YourCRMName" to the URL.');
             }
 
             const response = await fetch(`${API_URL}?crm=${encodeURIComponent(crmName)}`);
+            // Check for HTTP errors
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
             const result = await response.json();
 
             if (result.status === 'success') {
                 orders = result.data;
                 displayOrders();
-                startCountdown();
+                startCountdown(); // Re-start countdown for new orders
             } else {
-                throw new Error('Failed to fetch orders');
+                // If API returns success: false
+                throw new Error(result.message || 'Failed to fetch orders from API.');
             }
         } catch (error) {
             console.error('Error fetching orders:', error);
-            document.getElementById('content').innerHTML = 
-                '<div class="error">Error loading orders. Please check your API URL and try again.</div>';
+            contentDiv.innerHTML = `<div class="error">Error loading orders: ${error.message}. Please try again later or check the URL.</div>`;
         }
     }
 
-        // Function to display orders in cards
-        function displayOrders() {
-            const content = document.getElementById('content');
-            
-            if (orders.length === 0) {
-                content.innerHTML = '<div class="loading">No orders found.</div>';
-                return;
-            }
+    /**
+     * Displays orders in card format.
+     */
+    function displayOrders() {
+        const contentDiv = document.getElementById('content');
+        
+        if (orders.length === 0) {
+            contentDiv.innerHTML = '<div class="loading">No orders found for this CRM.</div>';
+            return;
+        }
 
-            const ordersHTML = orders.map((order, index) => `
-                <div class="order-card" id="order-${index}">
-                    <div class="order-header">
-                        <div class="dealer-name">${order.dealerName}</div>
-                        <div class="timestamp">Order Time: ${formatDateTime(order.timestamp)}</div>
+        // Use a DocumentFragment for more efficient DOM manipulation
+        const fragment = document.createDocumentFragment();
+        const ordersGrid = document.createElement('div');
+        ordersGrid.className = 'orders-grid';
+
+        orders.forEach((order, index) => {
+            const orderCard = document.createElement('div');
+            orderCard.className = 'order-card';
+            orderCard.id = `order-${index}`; // Keep ID for countdown updates
+
+            orderCard.innerHTML = `
+                <div class="order-header">
+                    <div class="dealer-name">${escapeHTML(order.dealerName)}</div>
+                    <div class="timestamp">Order Time: ${formatDateTime(order.timestamp)}</div>
+                </div>
+                
+                <div class="order-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Marketing Person:</span>
+                        <span class="detail-value">${escapeHTML(order.marketingPersonName)}</span>
                     </div>
-                    
-                    <div class="order-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Marketing Person:</span>
-                            <span class="detail-value">${order.marketingPersonName}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Location:</span>
-                            <span class="detail-value">${order.location}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">CRM Name:</span>
-                            <span class="detail-value">${order.crmName}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">File:</span>
-                            <span class="detail-value">
-                                <a href="${order.fileUploadLink}" target="_blank" class="file-link">View File</a>
-                            </span>
-                        </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Location:</span>
+                        <span class="detail-value">${escapeHTML(order.location)}</span>
                     </div>
-                    
-                    <div class="countdown-section">
-                        <div class="countdown-label">Time Remaining:</div>
-                        <div class="countdown-timer" id="countdown-${index}">Calculating...</div>
+                    <div class="detail-row">
+                        <span class="detail-label">CRM Name:</span>
+                        <span class="detail-value">${escapeHTML(order.crmName)}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">File:</span>
+                        <span class="detail-value">
+                            <a href="${escapeHTML(order.fileUploadLink)}" target="_blank" class="file-link">View File</a>
+                        </span>
                     </div>
                 </div>
-                `).join('');
-            content.innerHTML = `<div class="orders-grid">${ordersHTML}</div>`;
-        }
-
-        // Function to calculate deadline based on business rules
-        function calculateDeadline(timestamp) {
-            const orderTime = new Date(timestamp);
-            const hour = orderTime.getHours();
-            
-            let deadline;
-            
-            if (hour >= 17) {
-                // After 5 PM, deadline is next business day at 10 AM
-                deadline = getNextBusinessDay(orderTime);
-                deadline.setHours(10, 0, 0, 0);
-            } else {
-                // Before 5 PM, deadline is same day + 1 hour
-                deadline = new Date(orderTime.getTime() + (60 * 60 * 1000));
-            }
-            
-            return deadline;
-        }
-
-        // Function to get next business day (skipping weekends)
-        function getNextBusinessDay(date) {
-            const nextDay = new Date(date);
-            nextDay.setDate(nextDay.getDate() + 1);
-            
-            // If it's Saturday (6) or Sunday (0), move to Monday
-            while (nextDay.getDay() === 0 || nextDay.getDay() === 6) {
-                nextDay.setDate(nextDay.getDate() + 1);
-            }
-            
-            return nextDay;
-        }
-
-        // Function to format date and time
-        function formatDateTime(timestamp) {
-            const date = new Date(timestamp);
-            return date.toLocaleString();
-        }
-
-        // Function to format countdown display
-        function formatCountdown(milliseconds) {
-            if (milliseconds <= 0) {
-                return 'EXPIRED';
-            }
-            
-            const totalSeconds = Math.floor(milliseconds / 1000);
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = totalSeconds % 60;
-            
-            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
-
-        // Function to update countdown timers
-        function updateCountdowns() {
-            const now = new Date();
-            
-            orders.forEach((order, index) => {
-                const deadline = calculateDeadline(order.timestamp);
-                const timeRemaining = deadline.getTime() - now.getTime();
-                const countdownElement = document.getElementById(`countdown-${index}`);
                 
-                if (countdownElement) {
-                    const formattedTime = formatCountdown(timeRemaining);
-                    countdownElement.textContent = formattedTime;
-                    
-                    // Apply styling based on time remaining
-                    countdownElement.className = 'countdown-timer';
-                    
-                    if (timeRemaining <= 0) {
-                        countdownElement.classList.add('countdown-expired');
-                    } else if (timeRemaining <= 30 * 60 * 1000) { // 30 minutes
-                        countdownElement.classList.add('countdown-urgent');
-                    } else if (timeRemaining <= 60 * 60 * 1000) { // 1 hour
-                        countdownElement.classList.add('countdown-warning');
-                    } else {
-                        countdownElement.classList.add('countdown-normal');
-                    }
+                <div class="countdown-section">
+                    <div class="countdown-label">Time Remaining:</div>
+                    <div class="countdown-timer" id="countdown-${index}">Calculating...</div>
+                </div>
+            `;
+            ordersGrid.appendChild(orderCard);
+        });
+
+        fragment.appendChild(ordersGrid);
+        contentDiv.innerHTML = ''; // Clear existing content
+        contentDiv.appendChild(fragment); // Append the new content
+    }
+
+    /**
+     * Calculates the deadline based on business rules.
+     * @param {string} timestamp - The order creation timestamp string.
+     * @returns {Date} The calculated deadline Date object.
+     */
+    function calculateDeadline(timestamp) {
+        const orderTime = new Date(timestamp);
+        const hour = orderTime.getHours();
+        
+        let deadline = new Date(orderTime.getTime()); // Start with a copy of orderTime
+        
+        if (hour >= 17) {
+            // After 5 PM, deadline is next business day at 10 AM
+            deadline = getNextBusinessDay(orderTime);
+            deadline.setHours(10, 0, 0, 0);
+        } else {
+            // Before 5 PM, deadline is same day + 1 hour
+            deadline.setHours(orderTime.getHours() + 1, orderTime.getMinutes(), orderTime.getSeconds(), orderTime.getMilliseconds());
+        }
+        
+        return deadline;
+    }
+
+    /**
+     * Gets the next business day (skipping weekends).
+     * @param {Date} date - The starting Date object.
+     * @returns {Date} The Date object for the next business day.
+     */
+    function getNextBusinessDay(date) {
+        const nextDay = new Date(date);
+        nextDay.setDate(nextDay.getDate() + 1);
+        
+        // If it's Saturday (6) or Sunday (0), move to Monday
+        while (nextDay.getDay() === 0 || nextDay.getDay() === 6) {
+            nextDay.setDate(nextDay.getDate() + 1);
+        }
+        
+        return nextDay;
+    }
+
+    /**
+     * Formats a timestamp into a localized date and time string.
+     * @param {string} timestamp - The timestamp string.
+     * @returns {string} Formatted date and time string.
+     */
+    function formatDateTime(timestamp) {
+        const date = new Date(timestamp);
+        return date.toLocaleString();
+    }
+
+    /**
+     * Formats milliseconds into HH:MM:SS countdown string.
+     * @param {number} milliseconds - Time remaining in milliseconds.
+     * @returns {string} Formatted countdown string.
+     */
+    function formatCountdown(milliseconds) {
+        if (milliseconds <= 0) {
+            return 'EXPIRED';
+        }
+        
+        const totalSeconds = Math.floor(milliseconds / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    /**
+     * Updates countdown timers for all displayed orders.
+     */
+    function updateCountdowns() {
+        const now = new Date();
+        
+        orders.forEach((order, index) => {
+            const deadline = calculateDeadline(order.timestamp);
+            const timeRemaining = deadline.getTime() - now.getTime();
+            const countdownElement = document.getElementById(`countdown-${index}`);
+            
+            if (countdownElement) {
+                const formattedTime = formatCountdown(timeRemaining);
+                countdownElement.textContent = formattedTime;
+                
+                // Apply styling based on time remaining
+                countdownElement.className = 'countdown-timer'; // Reset class first
+                
+                if (timeRemaining <= 0) {
+                    countdownElement.classList.add('countdown-expired');
+                } else if (timeRemaining <= 30 * 60 * 1000) { // 30 minutes
+                    countdownElement.classList.add('countdown-urgent');
+                } else if (timeRemaining <= 60 * 60 * 1000) { // 1 hour
+                    countdownElement.classList.add('countdown-warning');
+                } else {
+                    countdownElement.classList.add('countdown-normal');
                 }
-            });
-        }
-
-        // Function to start countdown timer
-        function startCountdown() {
-            // Clear existing interval
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-            }
-            
-            // Update immediately
-            updateCountdowns();
-            
-            // Update every second
-            countdownInterval = setInterval(updateCountdowns, 1000);
-        }
-
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchOrders();
-            
-            // Auto-refresh every 30 seconds
-            setInterval(fetchOrders, 30 * 1000);
-        });
-
-        // Cleanup interval when page is unloaded
-        window.addEventListener('beforeunload', function() {
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
             }
         });
-    </script>
+    }
+
+    /**
+     * Starts the countdown interval. Clears any existing interval first.
+     */
+    function startCountdown() {
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+        }
+        
+        updateCountdowns(); // Initial update
+        countdownInterval = setInterval(updateCountdowns, 1000); // Update every second
+    }
+
+    /**
+     * Helper function to escape HTML to prevent XSS.
+     * @param {string} str - The string to escape.
+     * @returns {string} The escaped string.
+     */
+    function escapeHTML(str) {
+        const div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+    }
+
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchOrders();
+        
+        // Auto-refresh orders data every 30 seconds
+        // Consider making this longer if data changes infrequently to reduce API calls
+        setInterval(fetchOrders, 30 * 1000); 
+    });
+
+    // Cleanup interval when page is unloaded
+    window.addEventListener('beforeunload', function() {
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+        }
+    });
+</script>
 </body>
 </html>
